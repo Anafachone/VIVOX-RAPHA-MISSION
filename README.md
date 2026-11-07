@@ -83,6 +83,20 @@ O script também depende de ids fixos nos elementos da página (por exemplo `#bu
 
 ## Anotações para a TI (Kelson)
 
+### Pedido: ligar com a página do cliente (não feito)
+
+O sistema já tem a página do cliente, com dados e fotos cadastrados. O protótipo muda só o layout. Por isso:
+
+1. **Manter tudo salvo.** O que já foi adicionado no sistema continua salvo, sem perder nada. O que for adicionado nesta página (antes e depois, publicações, extras, capas, ordem e cabeçalho) também precisa ser salvo e voltar nas próximas aberturas.
+2. **Puxar da página do cliente, sem cadastrar duas vezes.** Os campos do protótipo que podem vir de lá:
+   - `id`: usar o identificador do cadastro.
+   - `nome`: nome da empresa.
+   - `seg`: categoria (Médico, Médico veterinário, Advogado ou Hospital).
+   - Foto de perfil: hoje o avatar mostra só as iniciais (`ini`). Usar a foto de perfil já cadastrada.
+   - Foto de cabeçalho (`hdrFoto`): a opção "Usar a foto que já existe no sistema" está desativada, esperando isso.
+   - Se necessário: canais contratados (`canais`), pacote e publicações por semana (`pub.pacote` e `pub.semanal`) e data da contratação.
+3. Só o que não existe no cadastro é adicionado aqui. O que já existe lá aparece automático.
+
 ### Pedido: aceitar PDF e PPT nos Extras (ainda não está feito)
 
 Hoje o extra aceita só fotos e vídeos. O pedido é poder guardar também PDF e apresentações (PPT e PPTX) na mesma pasta. O que precisa mudar:
@@ -97,9 +111,6 @@ Funções do script envolvidas: `isVid`, `limite`, `mediaThumb`, `lightbox` e `o
 
 ### Outras anotações
 
-- **Foto de cabeçalho já existente.** Puxar do sistema atual a foto de cabeçalho de cada cliente, para não precisar enviar de novo. No formulário "Editar cabeçalho" já existe a opção "Usar a foto que já existe no sistema", desativada, esperando essa integração.
-- **Cadastro de clientes.** Conectar a lista ao cadastro da plataforma para puxar nome, categoria e foto automaticamente. Hoje a lista é de exemplo.
-- **Salvar os dados.** Hoje tudo vive só na memória da página. Falta gravar clientes, antes e depois, publicações, extras, capas, ordem dos arquivos e cabeçalhos.
 - **Envio de arquivos.** As fotos e vídeos são lidos no navegador. No sistema real precisam ser enviados e guardados no servidor, com o limite de 500 MB por arquivo.
 
 ## Limitações conhecidas
