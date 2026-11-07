@@ -65,6 +65,20 @@ O script usa ids fixos de elementos (`#busca`, `#addbtn`, `#csvbtn` e outros). A
 
 ## Anotações para a TI (Kelson)
 
+### Pedido: ligar com a página do cliente (não feito)
+
+O sistema já tem a página do cliente, com dados e fotos cadastrados. O protótipo muda só o layout. Por isso:
+
+1. **Manter tudo salvo.** O que já foi adicionado no sistema continua salvo, sem perder nada. O que for adicionado nesta página (antes e depois, publicações, extras, capas, ordem e cabeçalho) também precisa ser salvo e voltar nas próximas aberturas.
+2. **Puxar da página do cliente, sem cadastrar duas vezes.** Os campos do protótipo que podem vir de lá:
+   - `id`: usar o identificador do cadastro.
+   - `nome`: nome da empresa.
+   - `seg`: categoria (Médico, Médico veterinário, Advogado ou Hospital).
+   - Foto de perfil: hoje o avatar mostra só as iniciais (`ini`). Usar a foto de perfil já cadastrada.
+   - Foto de cabeçalho (`hdrFoto`): a opção "Usar a foto que já existe no sistema" está desativada, esperando isso.
+   - Se necessário: canais contratados (`canais`), pacote e publicações por semana (`pub.pacote` e `pub.semanal`) e data da contratação.
+3. Só o que não existe no cadastro é adicionado aqui. O que já existe lá aparece automático.
+
 ### Pedido: aceitar PDF e PPT nos Extras (não feito)
 
 Hoje o extra aceita só fotos e vídeos. Precisa aceitar também PDF e apresentações (PPT e PPTX) na mesma pasta.
@@ -79,9 +93,6 @@ Funções envolvidas: `isVid`, `limite`, `mediaThumb`, `lightbox` e `openAdd`. H
 
 ### Outras anotações
 
-- **Foto de cabeçalho existente:** puxar do sistema a foto de cada cliente. A opção "Usar a foto que já existe no sistema" está desativada, esperando isso.
-- **Cadastro de clientes:** puxar nome, categoria e foto da plataforma. Hoje a lista é de exemplo.
-- **Salvar dados:** hoje nada é gravado. Falta salvar clientes, antes e depois, publicações, extras, capas, ordem e cabeçalhos.
 - **Envio de arquivos:** hoje os arquivos são lidos no navegador. No sistema real, enviar e guardar no servidor, com limite de 500 MB por arquivo.
 
 ## Limitações
