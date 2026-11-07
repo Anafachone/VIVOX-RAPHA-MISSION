@@ -534,6 +534,7 @@ function limite(fs){
   const big=fs.filter(f=>f.size>MAXMB*1048576), ok=fs.filter(f=>!(f.size>MAXMB*1048576));
   return {ok,msg:big.length?(big.length===1?'"'+big[0].name+'" passa de '+MAXMB+' MB e não foi adicionado.':big.length+' arquivos passam de '+MAXMB+' MB e não foram adicionados.'):''};
 }
+// PEDIDO PARA A TI (Kelson): aceitar PDF e PPT (PPTX) nos Extras. Hoje so fotos e videos (accept="image/*,video/*"). Ver o README, secao "Anotacoes para a TI".
 function isVid(f){return /^video\//.test(f.type||'')||/\.(mp4|m4v|mov|webm|mkv|avi|3gp|wmv|mpg|mpeg)$/i.test(f.name||'')}
 function fotoStyle(f){const x=f.x==null?50:f.x,y=f.y==null?50:f.y;return `object-position:${x}% ${y}%;transform:scale(${f.z||1});transform-origin:${x}% ${y}%`}
 function mediaThumb(m,alt){
