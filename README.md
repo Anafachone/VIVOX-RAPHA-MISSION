@@ -1,6 +1,6 @@
 # VIVOX Flow: página Acompanhamento (protótipo)
 
-Protótipo navegável da página **Acompanhamento** do VIVOX Flow. A ideia é reunir, em um lugar só, tudo o que foi feito para um cliente: a evolução (antes e depois), as publicações do Instagram e os extras (pastas de fotos e vídeos).
+Protótipo navegável da página **Acompanhamento** do VIVOX Flow. A ideia é reunir, em um lugar só, tudo o que foi feito para um cliente: o antes e depois, as publicações do Instagram e os extras (pastas de fotos e vídeos).
 
 É um único arquivo, `index.html`, sem instalação. A mesma página funciona no celular e no computador: no celular as seções ficam empilhadas, no computador elas se espalham em mais colunas.
 
@@ -47,19 +47,19 @@ As fotos das capturas são imagens de exemplo geradas só para teste.
 **Página do cliente.** No topo, o cabeçalho e, abaixo, três abas.
 
 - **Cabeçalho.** Foto de cabeçalho com o nome da empresa sobre ela. O texto pequeno "Editar cabeçalho" abre um formulário com o nome da empresa e a foto. A foto pode ser ajustada arrastando e com um controle de zoom lento e suave. Há uma área "Anteriores" para voltar a fotos já usadas (as 12 mais recentes). Sem foto, o topo mostra só o avatar com as iniciais e o nome.
-- **Visão geral (Evolução).** Antes e depois lado a lado, um cartão por caso. Detalhes abaixo.
+- **Visão geral.** Antes e depois lado a lado, um cartão por caso, sem título de seção. Detalhes abaixo.
 - **Publicações.** Gráfico de publicações por mês e lista de publicações do Instagram. Detalhes abaixo.
 - **Extras.** Pastas de arquivos (fotos e vídeos) sobre um assunto. Detalhes abaixo.
 
-### Evolução
+### Visão geral (antes e depois)
 
-- Botão "+" (círculo pequeno) abre o formulário de nova evolução.
+- Botão "+" (círculo pequeno) abre o formulário "Novo registro". A seção não tem título.
 - Campos obrigatórios: **canal**, **data da contratação**, **foto do antes** e **foto do depois**. Se faltar algo, o formulário não salva, avisa o que falta e destaca o campo.
 - Canais: Google Meu Negócio, Instagram e Facebook. A opção "+ Criar novo canal" continua disponível.
 - Data da contratação: campo para digitar (dd/mm/aaaa, as barras entram sozinhas) com três menus ao lado (Dia, Mês e Ano), que andam juntos com o campo.
 - A data do **Depois** é sempre a de hoje, preenchida sozinha no dia em que o registro é salvo.
 - Legenda opcional em cada lado (por exemplo, "como estava").
-- Clicar em uma foto abre em tela cheia, com uma seta transparente ao lado para alternar entre Antes e Depois. Sair: clicar na área escura, no × ou Esc. As setas do teclado também funcionam.
+- As fotos preenchem a caixa inteira (a imagem é recortada para caber). Clicar em uma foto abre ela inteira em tela cheia, com uma seta transparente ao lado para alternar entre Antes e Depois. Sair: clicar na área escura, no × ou Esc. As setas do teclado também funcionam.
 - Filtro "Todos os canais" e ordem pela data de contratação, do mais recente para o mais antigo.
 - "Remover" em cada cartão pede confirmação.
 
@@ -123,10 +123,10 @@ Os dados de exemplo ficam no começo do script, na lista `CLIENTS` dentro de `in
 | `metricas` | Marcador: qualquer valor diferente de `null` libera as abas. Com `null`, aparece "ainda não tem dados". O bloco de métricas por canal foi removido. |
 | `pub` | `{ pacote, semanal, meses }`: texto do pacote, publicações por semana e metas por mês. |
 | `posts` | Publicações: `[tipo, 'AAAA-MM-DD', link, alcance, envios, visualizacoes, curtidas, comentarios, salvamentos]`. |
-| `ba` | Evolução: `{ canal, antes:{u}, depois:{u}, legAntes, legDepois, dataContrato, dataAtual }`. |
+| `ba` | Antes e depois: `{ canal, antes:{u}, depois:{u}, legAntes, legDepois, dataContrato, dataAtual }`. |
 | `port` | Extras: `{ titulo, anoIni, mesIni, anoFim, mesFim, fotos:[{u,v}], capa, capaFora, desc, showDesc }`. Hoje o início e o fim são iguais (uma data só). |
 | `hdrFoto`, `hdrHist` | Foto de cabeçalho `{u,x,y,z}` e as anteriores. |
-| `canaisBA` | Canais disponíveis na Evolução. |
+| `canaisBA` | Canais disponíveis no antes e depois. |
 
 ### Como mudar o id de um cliente
 
@@ -146,7 +146,7 @@ O script depende de ids fixos nos elementos (por exemplo `#busca`, `#addba`, `#a
 
 1. **Foto de cabeçalho já existente.** Puxar do sistema atual a foto de cabeçalho de cada cliente, para não precisar enviar de novo. No formulário "Editar cabeçalho" já existe a opção "Usar a foto que já existe no sistema", desativada, esperando essa integração.
 2. **Cadastro de clientes.** Conectar a lista de clientes ao cadastro da plataforma, para puxar as informações automaticamente (nome, categoria e foto). Hoje a lista é de exemplo.
-3. **Salvar os dados.** Hoje tudo vive só na memória da página. Falta gravar clientes, evoluções, publicações, extras, descrições, capas, ordem dos arquivos e cabeçalhos.
+3. **Salvar os dados.** Hoje tudo vive só na memória da página. Falta gravar clientes, registros de antes e depois, publicações, extras, descrições, capas, ordem dos arquivos e cabeçalhos.
 4. **Envio de arquivos.** As fotos e vídeos são lidos no navegador. No sistema real precisam ser enviados e guardados no servidor, com o limite de 500 MB por arquivo, e as miniaturas e a reprodução de vídeo devem sair de endereços do servidor.
 5. **Publicações do Instagram.** A lista vem de CSV. O formato está na seção "Publicações". A contagem por mês é feita no navegador a partir da data de cada publicação.
 
