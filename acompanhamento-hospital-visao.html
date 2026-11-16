@@ -133,6 +133,27 @@ h1 { font-size: 26px; line-height: 1.15; margin: 8px 0 4px; font-weight: 600; le
 .confirm span { font-weight: 500; }
 .confirm div { display: flex; gap: 8px; }
 
+/* metricas do perfil */
+.metrics { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); overflow: hidden; }
+.m-toggle { display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: 0; padding: 11px 14px; text-align: left; }
+.m-toggle:hover { background: var(--chip); }
+.m-t1 { display: flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; }
+.m-t1 svg { width: 16px; height: 16px; color: var(--accent); }
+.m-t2 { margin-left: auto; font-size: 12px; color: var(--muted); text-align: right; }
+.m-chev { width: 16px; height: 16px; color: var(--muted); flex: none; transition: transform .15s; }
+.m-toggle[aria-expanded="true"] .m-chev { transform: rotate(180deg); }
+.m-panel { padding: 4px 14px 14px; display: flex; flex-direction: column; gap: 12px; }
+.m-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.m-per { font-size: 12px; color: var(--muted); font-weight: 500; }
+.m-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.m-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.m-tile .l { font-size: 11.5px; color: var(--muted); }
+.m-tile .v { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.m-tile .v.none { font-size: 13px; font-weight: 400; color: var(--muted); }
+.m-edit label { font-size: 12px; font-weight: 600; }
+.m-edit .inp { padding: 8px 10px; background: var(--surface); }
+.m-edit .m-tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+
 /* miniaturas ilustrativas */
 .thumb { --x: var(--ph1); --y: var(--ph2); position: relative; height: 170px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); overflow: hidden; }
 .thumb.after { --x: var(--ph2); --y: var(--ph3); }
@@ -226,7 +247,7 @@ label small { font-weight: 400; color: var(--muted); }
       </div>
     </div>
     <div class="grid" id="grid"></div>
-    <p class="foot-note">As miniaturas desta prévia são ilustrações. Edite o card de um canal para enviar os prints reais de antes e depois.</p>
+    <p class="foot-note">As miniaturas desta prévia são ilustrações. Edite o card de um canal para enviar os prints reais de antes e depois. As métricas são preenchidas manualmente em cada card.</p>
   </section>
 </div>
 
@@ -251,7 +272,9 @@ label small { font-weight: 400; color: var(--muted); }
     ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>',
     dots: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
     pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.1 2.1 0 00-4-4L4 16z"/></svg>',
-    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+    chev: '<svg class="m-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
   };
   var icon = function (c) { return I[c] || I.generic; };
 
@@ -260,6 +283,7 @@ label small { font-weight: 400; color: var(--muted); }
     { id: 1, canal: 'YouTube', nome: 'Hospital Visão Oftalmologia', url: '', date: '2026-11-09', antes: '', depois: '',
       desc: 'Canal do Hospital Visão Oftalmologia. Banner atual: Um olhar humano faz toda a diferença.' },
     { id: 2, canal: 'Google Meu Negócio', nome: 'Hospital Visão Oftalmologia', url: '', date: '2026-11-09', antes: '', depois: '',
+      metrics: { nota: '4,8', aval: '889' }, periodo: 'all', mOpen: true,
       desc: 'Hospital especializado em Cuiabá, Mato Grosso. Consultas, exames, tratamentos oftalmológicos e cirurgias.' },
     { id: 3, canal: 'Instagram', nome: '@hospitalvisao_cba', url: 'https://www.instagram.com/hospitalvisao_cba/', date: '2026-11-09', antes: '', depois: '',
       desc: 'Há 16 anos enxergando o que importa: você! Consultas, exames e cirurgias. Agende sua consulta.' }
@@ -307,6 +331,44 @@ label small { font-weight: 400; color: var(--muted); }
       (src ? '<img src="' + src + '" alt="">' : mock(item.canal)) + '</div>';
   }
 
+  /* ---------- metricas ---------- */
+  var MET = {
+    'Instagram': [['seg', 'Seguidores'], ['alc', 'Alcance médio por post'], ['cur', 'Curtidas médias por post'], ['com', 'Comentários médios por post'], ['eng', 'Engajamento médio', '%']],
+    'YouTube': [['ins', 'Inscritos'], ['vis', 'Visualizações médias por vídeo'], ['tem', 'Tempo médio assistido'], ['ctr', 'CTR médio', '%'], ['ylk', 'Curtidas médias por vídeo']],
+    'Google Meu Negócio': [['nota', 'Nota média'], ['aval', 'Avaliações'], ['vpf', 'Visualizações do perfil por mês'], ['lig', 'Ligações por mês'], ['rota', 'Pedidos de rota por mês']]
+  };
+  var DEF = [['seg', 'Seguidores'], ['alc', 'Alcance médio'], ['eng', 'Engajamento médio', '%'], ['cli', 'Cliques médios']];
+  var PER = { '7': 'dos últimos 7 dias', '30': 'dos últimos 30 dias', '90': 'dos últimos 90 dias', 'all': 'de todo o período' };
+  function metricsBlock(b) {
+    var defs = MET[b.canal] || DEF, m = b.metrics || {}, per = b.periodo || '30';
+    var filled = defs.filter(function (d) { return m[d[0]]; }).length;
+    var summary = filled ? filled + ' de ' + defs.length + ' métricas · média ' + PER[per] : 'Sem dados ainda';
+    var out = '<div class="metrics"><button type="button" class="m-toggle" data-act="m-toggle" aria-expanded="' + (b.mOpen ? 'true' : 'false') + '" aria-controls="m-' + b.id + '">' +
+      '<span class="m-t1">' + I.chart + 'Métricas do perfil</span><span class="m-t2">' + esc(summary) + '</span>' + I.chev + '</button>';
+    if (b.mOpen) {
+      out += '<div class="m-panel" id="m-' + b.id + '">';
+      if (b.mEditing) {
+        out += '<div class="m-edit"><div class="m-tiles">' +
+          '<label for="mp-' + b.id + '">Média<select class="inp" id="mp-' + b.id + '">' +
+          Object.keys(PER).map(function (k) { return '<option value="' + k + '"' + (k === per ? ' selected' : '') + '>' + PER[k] + '</option>'; }).join('') + '</select></label>' +
+          defs.map(function (d) {
+            return '<label for="mi-' + b.id + '-' + d[0] + '">' + esc(d[1]) + (d[2] ? ' (' + d[2] + ')' : '') +
+              '<input class="inp" id="mi-' + b.id + '-' + d[0] + '" type="text" inputmode="decimal" autocomplete="off" value="' + esc(m[d[0]] || '') + '"></label>';
+          }).join('') + '</div></div>' +
+          '<div class="m-bar"><span class="m-per">Preencha só o que você tiver. Deixe em branco o que não souber.</span><div style="display:flex;gap:8px"><button class="btn ghost sm" type="button" data-act="m-cancel">Cancelar</button><button class="btn primary sm" type="button" data-act="m-save">Salvar métricas</button></div></div>';
+      } else {
+        out += '<div class="m-tiles">' + defs.map(function (d) {
+          var v = m[d[0]], txt = v ? esc(v) + (d[2] && v.indexOf(d[2]) < 0 ? ' ' + d[2] : '') : 'Não informado';
+          return '<div class="m-tile"><span class="l">' + esc(d[1]) + '</span><span class="v' + (v ? '' : ' none') + '">' + txt + '</span></div>';
+        }).join('') + '</div>' +
+          '<div class="m-bar"><span class="m-per">' + (filled ? 'Média ' + PER[per] + '. Valores informados manualmente.' : 'Nenhuma métrica preenchida.') + '</span>' +
+          '<button class="btn ghost sm" type="button" data-act="m-edit">' + I.pen + (filled ? 'Editar métricas' : 'Preencher métricas') + '</button></div>';
+      }
+      out += '</div>';
+    }
+    return out + '</div>';
+  }
+
   /* ---------- cards ---------- */
   function render() {
     var list = items.filter(function (b) { return filter === 'all' || b.canal === filter; });
@@ -339,10 +401,12 @@ label small { font-weight: 400; color: var(--muted); }
         '<div class="ba-col"><div class="ba-lab"><span class="pill">ANTES</span></div>' + thumb(b, 'antes') + '</div>' +
         '<span class="arrow" aria-hidden="true">' + I.arrow + '</span>' +
         '<div class="ba-col"><div class="ba-lab"><span class="pill">DEPOIS</span><span class="date">' + fmtDate(b.date) + '</span></div>' + thumb(b, 'depois') + '</div>' +
-        '</div>' + foot + '</article>';
+        '</div>' + metricsBlock(b) + foot + '</article>';
     }).join('');
     var ed = items.filter(function (p) { return p.editing; })[0];
     if (ed) { var ta = $('#de-' + ed.id); if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } }
+    var me = items.filter(function (p) { return p.mEditing && p.mOpen; })[0];
+    if (me) { var mi = document.querySelector('#m-' + me.id + ' input'); if (mi) mi.focus(); }
   }
   function syncFilter() {
     var sel = $('#filtro'), cur = filter, seen = {};
@@ -458,6 +522,14 @@ label small { font-weight: 400; color: var(--muted); }
     else if (act === 'desc-edit') { item.editing = true; render(); }
     else if (act === 'desc-cancel') { item.editing = false; render(); }
     else if (act === 'desc-save') { item.desc = $('#de-' + id).value.trim(); item.editing = false; render(); toast('Descrição salva.'); }
+    else if (act === 'm-toggle') { item.mOpen = !item.mOpen; if (!item.mOpen) item.mEditing = false; render(); }
+    else if (act === 'm-edit') { item.mOpen = true; item.mEditing = true; render(); }
+    else if (act === 'm-cancel') { item.mEditing = false; render(); }
+    else if (act === 'm-save') {
+      item.metrics = item.metrics || {};
+      (MET[item.canal] || DEF).forEach(function (d) { item.metrics[d[0]] = $('#mi-' + id + '-' + d[0]).value.trim(); });
+      item.periodo = $('#mp-' + id).value; item.mEditing = false; render(); toast('Métricas salvas.');
+    }
   });
   document.addEventListener('input', function (e) {
     if (e.target.id && e.target.id.indexOf('de-') === 0) { var c = $('#dc-' + e.target.id.slice(3)); if (c) c.textContent = e.target.value.length + '/160'; }
@@ -467,6 +539,9 @@ label small { font-weight: 400; color: var(--muted); }
       if (!$('#drawer').hidden) { closeDrawer(); return; }
       closeMenus();
       var ed = items.filter(function (p) { return p.editing; })[0]; if (ed) { ed.editing = false; render(); }
+    }
+    if (e.key === 'Enter' && e.target.id && e.target.id.indexOf('mi-') === 0) {
+      e.preventDefault(); e.target.closest('.metrics').querySelector('[data-act="m-save"]').click();
     }
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id && e.target.id.indexOf('de-') === 0) {
       var p = byId(e.target.id.slice(3)); p.desc = e.target.value.trim(); p.editing = false; render(); toast('Descrição salva.');
