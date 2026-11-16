@@ -113,8 +113,8 @@ h1 { font-size: 26px; line-height: 1.15; margin: 8px 0 4px; font-weight: 600; le
 .menu button:disabled { color: var(--muted); cursor: not-allowed; }
 .menu .del { color: var(--danger); }
 .c-info { display: flex; flex-direction: column; gap: 2px; }
-.c-nome { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
-.desc { margin: 0 -8px; color: var(--ink); font-size: 13.5px; min-height: 34px; padding: 6px 8px; border-radius: 8px; cursor: text; text-align: left; background: none; border: 0; width: calc(100% + 16px); display: block; }
+.c-nome { font-weight: 500; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; margin-top: -6px; }
+.desc { margin: 0 -8px; color: var(--muted); font-size: 12.5px; line-height: 1.5; min-height: 0; padding: 4px 8px; border-radius: 8px; cursor: text; text-align: left; background: none; border: 0; width: calc(100% + 16px); display: block; }
 .desc:hover { background: var(--bg); }
 .desc.empty { color: var(--muted); font-style: italic; }
 .desc-edit textarea { width: 100%; min-height: 84px; resize: vertical; background: var(--bg); border: 1px solid var(--accent); border-radius: 10px; padding: 9px 10px; }
@@ -396,12 +396,12 @@ label small { font-weight: 400; color: var(--muted); }
           ? '<a class="btn primary" href="' + esc(b.url) + '" target="_blank" rel="noopener noreferrer">Abrir perfil ' + I.ext + '</a><span class="host" title="' + esc(b.url) + '">' + esc(hostOf(b.url)) + '</span>'
           : '<button class="btn primary" type="button" data-act="edit">Adicionar link</button><span class="host">Cadastre o endereço da conta</span>') + '</div>';
       return '<article class="card" data-id="' + b.id + '">' + head +
-        '<div class="c-info"><div class="c-nome">' + esc(b.nome) + '</div>' + descBlock + '</div>' +
+        '<div class="c-nome">' + esc(b.nome) + '</div>' +
         '<div class="ba-body">' +
         '<div class="ba-col"><div class="ba-lab"><span class="pill">ANTES</span></div>' + thumb(b, 'antes') + '</div>' +
         '<span class="arrow" aria-hidden="true">' + I.arrow + '</span>' +
         '<div class="ba-col"><div class="ba-lab"><span class="pill">DEPOIS</span><span class="date">' + fmtDate(b.date) + '</span></div>' + thumb(b, 'depois') + '</div>' +
-        '</div>' + metricsBlock(b) + foot + '</article>';
+        '</div>' + metricsBlock(b) + descBlock + foot + '</article>';
     }).join('');
     var ed = items.filter(function (p) { return p.editing; })[0];
     if (ed) { var ta = $('#de-' + ed.id); if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } }
