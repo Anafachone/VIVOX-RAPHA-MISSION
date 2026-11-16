@@ -1,0 +1,542 @@
+<title>Acompanhamento Hospital Visão</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: cabecalho + abas, bloco "Perfis" (cards com descricao e botao) e bloco "Antes e depois" em grade de 2 colunas. */
+:root {
+  --bg: #F5EFE4;
+  --surface: #FFFCF4;
+  --line: #E4DAC8;
+  --ink: #2A251E;
+  --muted: #7B7262;
+  --accent: #8C6430;
+  --accent-ink: #FFF8EA;
+  --chip: #E7DDCA;
+  --chip-ink: #5C5240;
+  --ok: #2F7D4F;
+  --ok-bg: #DDEBDD;
+  --warn: #9A5516;
+  --warn-bg: #F4E2C8;
+  --danger: #B3402F;
+  --ph1: #E9E1D0;
+  --ph2: #D8CDB6;
+  --ph3: #C9A66A;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1B1813; --surface: #242019; --line: #3A3429; --ink: #EFE7D8; --muted: #A39984;
+    --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4;
+    --ok: #7FC79B; --ok-bg: #26382C; --warn: #E0A964; --warn-bg: #3F3223; --danger: #E27A68;
+    --ph1: #332E24; --ph2: #443D2F; --ph3: #8C6A3A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1B1813; --surface: #242019; --line: #3A3429; --ink: #EFE7D8; --muted: #A39984;
+  --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4;
+  --ok: #7FC79B; --ok-bg: #26382C; --warn: #E0A964; --warn-bg: #3F3223; --danger: #E27A68;
+  --ph1: #332E24; --ph2: #443D2F; --ph3: #8C6A3A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* cabecalho */
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+h1 { font-size: 26px; line-height: 1.15; margin: 8px 0 4px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0; }
+.top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.field-select, .btn-outline {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; height: 40px; padding: 0 14px;
+  display: inline-flex; align-items: center; gap: 8px; font-weight: 500;
+}
+.field-select { padding-right: 8px; }
+.field-select select { appearance: none; background: none; border: 0; height: 100%; padding-right: 22px; min-width: 120px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237B7262' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 4px center; }
+.field-select select:focus-visible { outline: none; }
+.field-select:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.field-select option { background: var(--surface); color: var(--ink); }
+.btn-outline:hover { border-color: var(--accent); }
+
+.tabs { display: flex; gap: 26px; margin-top: 24px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { background: none; border: 0; padding: 10px 2px 12px; color: var(--muted); font-weight: 500; white-space: nowrap; position: relative; }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 600; }
+.tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+
+/* secoes */
+.section { margin-top: 32px; }
+.sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.sec-head h2 { font-size: 16px; margin: 0; font-weight: 600; }
+.sec-head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.sec-tools { display: flex; gap: 10px; align-items: center; }
+.btn { border-radius: 9px; height: 38px; padding: 0 16px; border: 1px solid transparent; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; white-space: nowrap; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn.ghost:hover { border-color: var(--accent); }
+.btn.danger { background: var(--danger); color: #fff; }
+.btn.square { width: 40px; padding: 0; height: 40px; border-radius: 10px; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-width: 0; }
+
+/* perfis */
+.profiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.pcard { display: flex; flex-direction: column; gap: 12px; }
+.p-head { display: flex; align-items: center; gap: 12px; position: relative; }
+.ico { width: 40px; height: 40px; border-radius: 11px; background: var(--chip); color: var(--chip-ink); display: grid; place-items: center; flex: none; }
+.ico svg { width: 22px; height: 22px; }
+.p-id { min-width: 0; flex: 1; }
+.p-canal { font-size: 12px; color: var(--muted); font-weight: 500; }
+.p-nome { font-weight: 600; overflow-wrap: anywhere; }
+.status { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.status.ok { color: var(--ok); background: var(--ok-bg); }
+.status.warn { color: var(--warn); background: var(--warn-bg); }
+.kebab { background: none; border: 0; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; color: var(--muted); flex: none; }
+.kebab:hover { background: var(--chip); color: var(--ink); }
+.kebab svg { width: 18px; height: 18px; }
+.menu { position: absolute; right: 0; top: 38px; z-index: 5; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 6px; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,.14); }
+.menu button { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 8px 10px; border-radius: 8px; }
+.menu button:hover:not(:disabled) { background: var(--chip); }
+.menu button:disabled { color: var(--muted); cursor: not-allowed; }
+.menu .del { color: var(--danger); }
+.desc { margin: 0; color: var(--ink); font-size: 13.5px; min-height: 40px; padding: 6px 8px; margin-inline: -8px; border-radius: 8px; cursor: text; text-align: left; background: none; border: 0; width: calc(100% + 16px); display: block; }
+.desc:hover { background: var(--bg); }
+.desc.empty { color: var(--muted); font-style: italic; }
+.desc-edit textarea { width: 100%; min-height: 84px; resize: vertical; background: var(--bg); border: 1px solid var(--accent); border-radius: 10px; padding: 9px 10px; }
+.desc-edit .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.p-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line); }
+.p-foot .host { font-size: 12px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.confirm { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line); }
+.confirm span { font-weight: 500; }
+.confirm div { display: flex; gap: 8px; }
+
+/* antes e depois */
+.ba-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 16px; }
+.bacard { display: flex; flex-direction: column; gap: 14px; }
+.ba-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; position: relative; }
+.chip { background: var(--chip); color: var(--chip-ink); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; }
+.ba-actions { display: flex; align-items: center; gap: 4px; }
+.ba-actions .btn { height: 32px; padding: 0 10px; font-weight: 500; }
+.ba-body { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; }
+.ba-col { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.ba-lab { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .08em; font-weight: 600; color: var(--muted); }
+.pill { background: var(--chip); color: var(--chip-ink); padding: 3px 9px; border-radius: 99px; letter-spacing: .1em; }
+.date { font-weight: 500; letter-spacing: 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+.arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--chip); color: var(--chip-ink); display: grid; place-items: center; }
+.arrow svg { width: 16px; height: 16px; }
+.thumb { --x: var(--ph1); --y: var(--ph2); position: relative; height: 180px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); overflow: hidden; }
+.thumb.after { --x: var(--ph2); --y: var(--ph3); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.mock { position: absolute; inset: 12px; display: flex; flex-direction: column; gap: 8px; }
+.mock i, .mock b { display: block; background: var(--x); border-radius: 4px; }
+.mock .y { background: var(--y); }
+.mock .row { display: flex; gap: 8px; align-items: center; }
+.mock .col { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.mock .dot { width: 34px; height: 34px; border-radius: 50%; background: var(--y); flex: none; }
+.mock b { height: 7px; }
+.mock .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex: 1; }
+.mock .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; flex: 1; }
+.mock .banner { height: 46px; border-radius: 6px; background: var(--y); }
+.mock .mosaic { display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; height: 82px; }
+.mock .mosaic i:first-child { grid-row: span 2; background: var(--y); }
+.empty-note { color: var(--muted); padding: 22px; border: 1px dashed var(--line); border-radius: 14px; text-align: center; grid-column: 1 / -1; }
+.foot-note { color: var(--muted); font-size: 12px; margin-top: 18px; }
+
+/* painel lateral */
+#scrim { position: fixed; inset: 0; background: rgba(20,16,10,.42); z-index: 20; }
+#drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); z-index: 21; background: var(--surface); border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.d-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.d-head h2 { margin: 0; font-size: 17px; font-weight: 600; }
+form { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.d-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
+.d-foot { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 20px; border-top: 1px solid var(--line); }
+label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 13px; }
+label small { font-weight: 400; color: var(--muted); }
+.inp { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; font-weight: 400; }
+.inp:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.hint { font-size: 12px; font-weight: 400; color: var(--muted); }
+.hint.err { color: var(--danger); }
+.hint.warn { color: var(--warn); }
+.file-note { font-weight: 400; font-size: 12px; color: var(--muted); }
+
+#toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg);
+  padding: 10px 16px; border-radius: 10px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
+
+@media (max-width: 560px) {
+  h1 { font-size: 22px; }
+  .top-actions { width: 100%; }
+  .top-actions .field-select { flex: 1; }
+  .ba-body { grid-template-columns: 1fr; }
+  .arrow { transform: rotate(90deg); margin-inline: auto; }
+  .p-foot .btn.primary { width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #drawer { animation: slide .18s ease-out; }
+  @keyframes slide { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Acompanhamento</div>
+      <h1>Hospital Visão</h1>
+      <p class="sub">A evolução de cada canal, antes e depois.</p>
+    </div>
+    <div class="top-actions">
+      <label class="field-select" style="flex-direction:row;font-weight:500;font-size:14px">
+        <span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Cliente</span>
+        <select id="cliente" aria-label="Cliente"><option>Hospital Visão</option></select>
+      </label>
+      <button class="btn-outline" id="share" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/></svg>
+        Compartilhar
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Seções do acompanhamento">
+    <button class="tab" role="tab" aria-selected="true" type="button">Visão geral</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Estratégia</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Publicações</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Entregáveis</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Propostas</button>
+  </nav>
+
+  <section class="section" aria-labelledby="h-perfis">
+    <div class="sec-head">
+      <div>
+        <h2 id="h-perfis">Perfis do cliente</h2>
+        <p>O que é cada canal e o atalho para abrir a conta.</p>
+      </div>
+      <button class="btn primary" type="button" data-act="add-profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Adicionar perfil
+      </button>
+    </div>
+    <div class="profiles" id="profiles"></div>
+  </section>
+
+  <section class="section" aria-labelledby="h-ba">
+    <div class="sec-head">
+      <h2 id="h-ba">Antes e depois</h2>
+      <div class="sec-tools">
+        <label class="field-select" style="flex-direction:row;font-weight:500;font-size:14px;height:40px">
+          <select id="filtro" aria-label="Filtrar por canal"><option value="all">Todos os canais</option></select>
+        </label>
+        <button class="btn primary square" type="button" data-act="add-ba" aria-label="Adicionar antes e depois" title="Adicionar antes e depois">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="ba-grid" id="ba"></div>
+    <p class="foot-note">As miniaturas desta prévia são ilustrações. Use o botão + para enviar os prints reais de antes e depois.</p>
+  </section>
+</div>
+
+<div id="scrim" hidden></div>
+<aside id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" hidden></aside>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  var CANAIS = ['Instagram', 'YouTube', 'Google Meu Negócio', 'Facebook', 'TikTok', 'Site', 'Outro'];
+  var HOSTS = {
+    'Instagram': ['instagram.com'], 'YouTube': ['youtube.com', 'youtu.be'],
+    'Google Meu Negócio': ['google.com', 'g.page', 'goo.gl', 'maps.app.goo.gl'],
+    'Facebook': ['facebook.com', 'fb.com'], 'TikTok': ['tiktok.com']
+  };
+  var I = {
+    'Instagram': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor"/></svg>',
+    'YouTube': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/></svg>',
+    'Google Meu Negócio': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M5 12v7h14v-7"/><path d="M4 9c0 1.7 1.3 3 2.7 3S9.3 10.7 9.3 9c0 1.7 1.3 3 2.7 3s2.7-1.3 2.7-3c0 1.7 1.3 3 2.7 3S20 10.7 20 9"/><path d="M10 19v-4h4v4"/></svg>',
+    'generic': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.6 5.6 3.6 9s-1.1 6.4-3.6 9c-2.5-2.6-3.6-5.6-3.6-9S9.5 5.6 12 3z"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>',
+    dots: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+    pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.1 2.1 0 00-4-4L4 16z"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+  };
+  var icon = function (c) { return I[c] || I.generic; };
+
+  var uid = 10;
+  var profiles = [
+    { id: 1, canal: 'Instagram', nome: '@hospitalvisao_cba', url: 'https://www.instagram.com/hospitalvisao_cba/',
+      desc: 'Há 16 anos enxergando o que importa: você! Consultas, exames e cirurgias. Agende sua consulta.' },
+    { id: 2, canal: 'YouTube', nome: 'Hospital Visão Oftalmologia', url: '',
+      desc: 'Canal do Hospital Visão Oftalmologia. Banner atual: Um olhar humano faz toda a diferença.' },
+    { id: 3, canal: 'Google Meu Negócio', nome: 'Hospital Visão Oftalmologia', url: '',
+      desc: 'Hospital especializado em Cuiabá, Mato Grosso. Consultas, exames, tratamentos oftalmológicos e cirurgias.' }
+  ];
+  var bas = [
+    { id: 1, canal: 'YouTube', date: '2026-11-09', antes: '', depois: '' },
+    { id: 2, canal: 'Google Meu Negócio', date: '2026-11-09', antes: '', depois: '' },
+    { id: 3, canal: 'Instagram', date: '2026-11-09', antes: '', depois: '' }
+  ];
+  var filter = 'all';
+  var ctx = null, lastFocus = null;
+
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var fmtDate = function (iso) { var p = (iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : ''; };
+  var byId = function (arr, id) { return arr.filter(function (x) { return x.id === +id; })[0]; };
+  var hostOf = function (u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+
+  var toastT;
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2400);
+  }
+  function copy(text, okMsg) {
+    var done = function () { toast(okMsg); };
+    var fail = function () { toast('Não foi possível copiar. Selecione o texto e copie manualmente.'); };
+    try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+  }
+
+  /* ---------- miniaturas ilustrativas ---------- */
+  function mock(canal) {
+    var tx = '<b style="width:62%"></b><b style="width:40%"></b>';
+    if (canal === 'Instagram') {
+      return '<div class="mock"><div class="row"><span class="dot"></span><div class="col">' + tx + '</div></div>' +
+        '<div class="row"><b style="width:26%"></b><b style="width:26%"></b><b style="width:26%"></b></div>' +
+        '<div class="grid3"><i></i><i class="y"></i><i></i><i class="y"></i><i></i><i class="y"></i></div></div>';
+    }
+    if (canal === 'YouTube') {
+      return '<div class="mock"><div class="banner"></div><div class="row"><span class="dot"></span><div class="col">' + tx + '</div></div>' +
+        '<div class="grid4"><i></i><i class="y"></i><i></i><i class="y"></i></div></div>';
+    }
+    if (canal === 'Google Meu Negócio') {
+      return '<div class="mock"><div class="mosaic"><i></i><i></i><i></i></div><b style="width:70%;height:10px"></b><b style="width:40%"></b><b style="width:55%"></b></div>';
+    }
+    return '<div class="mock"><div class="banner"></div><b style="width:70%"></b><b style="width:50%"></b><b style="width:60%"></b></div>';
+  }
+  function thumb(item, kind) {
+    var src = item[kind];
+    var alt = (kind === 'antes' ? 'Antes' : 'Depois') + ' do canal ' + item.canal;
+    return '<div class="thumb ' + (kind === 'depois' ? 'after' : '') + '" role="img" aria-label="' + esc(alt) + '">' +
+      (src ? '<img src="' + src + '" alt="">' : mock(item.canal)) + '</div>';
+  }
+
+  /* ---------- perfis ---------- */
+  function renderProfiles() {
+    var box = $('#profiles');
+    if (!profiles.length) { box.innerHTML = '<div class="empty-note">Nenhum perfil cadastrado. Use o botão Adicionar perfil.</div>'; return; }
+    box.innerHTML = profiles.map(function (p) {
+      var has = !!p.url;
+      var descBlock;
+      if (p.editing) {
+        descBlock = '<div class="desc-edit"><textarea id="de-' + p.id + '" maxlength="160" aria-label="Descrição do perfil">' + esc(p.desc) + '</textarea>' +
+          '<div class="row"><span class="count" id="dc-' + p.id + '">' + (p.desc || '').length + '/160</span>' +
+          '<div style="display:flex;gap:8px"><button class="btn ghost" type="button" data-act="desc-cancel">Cancelar</button><button class="btn primary" type="button" data-act="desc-save">Salvar</button></div></div></div>';
+      } else {
+        descBlock = '<button type="button" class="desc ' + (p.desc ? '' : 'empty') + '" data-act="desc-edit" title="Clique para editar a descrição">' +
+          (p.desc ? esc(p.desc) : 'Sem descrição. Clique para adicionar.') + '</button>';
+      }
+      var foot;
+      if (p.confirming) {
+        foot = '<div class="confirm"><span>Remover este perfil?</span><div><button class="btn ghost" type="button" data-act="remove-no">Cancelar</button><button class="btn danger" type="button" data-act="remove-yes">Remover</button></div></div>';
+      } else {
+        foot = '<div class="p-foot">' + (has
+          ? '<a class="btn primary" href="' + esc(p.url) + '" target="_blank" rel="noopener noreferrer">Abrir perfil ' + I.ext + '</a><span class="host" title="' + esc(p.url) + '">' + esc(hostOf(p.url)) + '</span>'
+          : '<button class="btn primary" type="button" data-act="edit">Adicionar link</button><span class="host">Cadastre o endereço da conta</span>') + '</div>';
+      }
+      return '<article class="card pcard" data-kind="p" data-id="' + p.id + '">' +
+        '<div class="p-head"><span class="ico">' + icon(p.canal) + '</span>' +
+        '<div class="p-id"><div class="p-canal">' + esc(p.canal) + '</div><div class="p-nome">' + esc(p.nome) + '</div></div>' +
+        '<span class="status ' + (has ? 'ok' : 'warn') + '">' + (has ? 'Link cadastrado' : 'Sem link') + '</span>' +
+        '<button class="kebab" type="button" data-act="menu" aria-haspopup="true" aria-expanded="false" aria-label="Mais ações do perfil ' + esc(p.nome) + '">' + I.dots + '</button>' +
+        '<div class="menu" hidden><button type="button" data-act="edit">Editar</button><button type="button" data-act="copy"' + (has ? '' : ' disabled') + '>Copiar link</button><button type="button" class="del" data-act="remove">Remover</button></div></div>' +
+        descBlock + foot + '</article>';
+    }).join('');
+    var ed = profiles.filter(function (p) { return p.editing; })[0];
+    if (ed) { var ta = $('#de-' + ed.id); if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } }
+  }
+
+  /* ---------- antes e depois ---------- */
+  function renderBA() {
+    var list = bas.filter(function (b) { return filter === 'all' || b.canal === filter; });
+    var box = $('#ba');
+    if (!list.length) { box.innerHTML = '<div class="empty-note">Nenhum antes e depois para este canal. Use o botão + para adicionar.</div>'; return; }
+    box.innerHTML = list.map(function (b) {
+      var actions = b.confirming
+        ? '<div class="ba-actions"><span style="font-weight:500;margin-right:6px">Remover?</span><button class="btn ghost" type="button" data-act="remove-no">Cancelar</button><button class="btn danger" type="button" data-act="remove-yes">Remover</button></div>'
+        : '<div class="ba-actions"><button class="btn ghost" type="button" data-act="edit">' + I.pen + 'Editar</button>' +
+          '<button class="kebab" type="button" data-act="menu" aria-haspopup="true" aria-expanded="false" aria-label="Mais ações">' + I.dots + '</button>' +
+          '<div class="menu" hidden><button type="button" class="del" data-act="remove">Remover</button></div></div>';
+      return '<article class="card bacard" data-kind="b" data-id="' + b.id + '">' +
+        '<div class="ba-head"><span class="chip">' + esc(b.canal) + '</span>' + actions + '</div>' +
+        '<div class="ba-body">' +
+        '<div class="ba-col"><div class="ba-lab"><span class="pill">ANTES</span></div>' + thumb(b, 'antes') + '</div>' +
+        '<span class="arrow" aria-hidden="true">' + I.arrow + '</span>' +
+        '<div class="ba-col"><div class="ba-lab"><span class="pill">DEPOIS</span><span class="date">' + fmtDate(b.date) + '</span></div>' + thumb(b, 'depois') + '</div>' +
+        '</div></article>';
+    }).join('');
+  }
+
+  /* ---------- painel lateral ---------- */
+  function opts(sel) { return CANAIS.map(function (c) { return '<option' + (c === sel ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join(''); }
+  function openDrawer(mode, id) {
+    lastFocus = document.activeElement;
+    var item = id ? byId(mode === 'p' ? profiles : bas, id) : null;
+    ctx = { mode: mode, id: id || null };
+    var d = $('#drawer'), html;
+    if (mode === 'p') {
+      var v = item || { canal: 'Instagram', nome: '', url: '', desc: '' };
+      html = '<div class="d-head"><h2 id="d-title">' + (item ? 'Editar perfil' : 'Adicionar perfil') + '</h2><button class="kebab" type="button" data-act="close" aria-label="Fechar">' + I.x + '</button></div>' +
+        '<form id="f" novalidate><div class="d-body">' +
+        '<label for="f-canal">Canal<select class="inp" id="f-canal">' + opts(v.canal) + '</select></label>' +
+        '<label for="f-nome">Nome ou @ do perfil<input class="inp" id="f-nome" type="text" value="' + esc(v.nome) + '" placeholder="@usuario ou nome da página" autocomplete="off"><span class="hint err" id="e-nome" hidden></span></label>' +
+        '<label for="f-url">Endereço da conta (link)<input class="inp" id="f-url" type="text" inputmode="url" value="' + esc(v.url) + '" placeholder="https://" autocomplete="off"><span class="hint" id="e-url">Cole o link do perfil. Ele será aberto em uma nova aba.</span></label>' +
+        '<label for="f-desc">Descrição geral <small>(opcional)</small><textarea class="inp" id="f-desc" rows="4" maxlength="160" placeholder="Em uma ou duas frases, o que é este canal.">' + esc(v.desc) + '</textarea><span class="count" id="f-count">' + (v.desc || '').length + '/160</span></label>' +
+        '</div><div class="d-foot"><button class="btn ghost" type="button" data-act="close">Cancelar</button><button class="btn primary" type="submit">Salvar</button></div></form>';
+    } else {
+      var b = item || { canal: 'Instagram', date: '2026-11-16' };
+      html = '<div class="d-head"><h2 id="d-title">' + (item ? 'Editar antes e depois' : 'Adicionar antes e depois') + '</h2><button class="kebab" type="button" data-act="close" aria-label="Fechar">' + I.x + '</button></div>' +
+        '<form id="f" novalidate><div class="d-body">' +
+        '<label for="f-canal">Canal<select class="inp" id="f-canal">' + opts(b.canal) + '</select></label>' +
+        '<label for="f-date">Data do depois<input class="inp" id="f-date" type="date" value="' + esc(b.date) + '"><span class="hint err" id="e-date" hidden>Informe a data.</span></label>' +
+        '<label for="f-antes">Print do antes<input class="inp" id="f-antes" type="file" accept="image/*">' + (item ? '<span class="file-note">Deixe vazio para manter a imagem atual.</span>' : '') + '</label>' +
+        '<label for="f-depois">Print do depois<input class="inp" id="f-depois" type="file" accept="image/*">' + (item ? '<span class="file-note">Deixe vazio para manter a imagem atual.</span>' : '') + '</label>' +
+        '</div><div class="d-foot"><button class="btn ghost" type="button" data-act="close">Cancelar</button><button class="btn primary" type="submit">Salvar</button></div></form>';
+    }
+    d.innerHTML = html; d.hidden = false; $('#scrim').hidden = false;
+    var first = d.querySelector('input,select,textarea'); if (first) first.focus();
+    var fu = $('#f-url'), fd = $('#f-desc');
+    if (fu) { fu.addEventListener('input', checkHost); $('#f-canal').addEventListener('change', checkHost); }
+    if (fd) fd.addEventListener('input', function () { $('#f-count').textContent = fd.value.length + '/160'; });
+    $('#f').addEventListener('submit', submit);
+  }
+  function closeDrawer() {
+    $('#drawer').hidden = true; $('#scrim').hidden = true; ctx = null;
+    if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+  }
+  function normUrl(raw) {
+    var u = raw.trim(); if (!u) return '';
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+    try { var x = new URL(u); return x.hostname.indexOf('.') > 0 ? x.href : null; } catch (e) { return null; }
+  }
+  function hostOk(canal, url) {
+    var list = HOSTS[canal]; if (!list) return true;
+    var h = hostOf(url);
+    return list.some(function (x) { return h === x || h.slice(-(x.length + 1)) === '.' + x; });
+  }
+  function checkHost() {
+    var out = $('#e-url'), raw = $('#f-url').value, canal = $('#f-canal').value;
+    out.className = 'hint';
+    if (!raw.trim()) { out.textContent = 'Cole o link do perfil. Ele será aberto em uma nova aba.'; return; }
+    var u = normUrl(raw);
+    if (u === null) { out.className = 'hint err'; out.textContent = 'Esse endereço não parece válido.'; return; }
+    if (!hostOk(canal, u)) { out.className = 'hint warn'; out.textContent = 'Esse endereço não parece ser do canal ' + canal + '. Confira antes de salvar.'; return; }
+    out.textContent = 'Endereço reconhecido.';
+  }
+  function readFile(f) {
+    return new Promise(function (res) {
+      if (!f) return res(null);
+      var r = new FileReader(); r.onload = function () { res(r.result); }; r.onerror = function () { res(null); }; r.readAsDataURL(f);
+    });
+  }
+  function submit(e) {
+    e.preventDefault();
+    if (ctx.mode === 'p') {
+      var nome = $('#f-nome').value.trim(), raw = $('#f-url').value, canal = $('#f-canal').value;
+      var en = $('#e-nome'), ok = true;
+      en.hidden = !!nome; if (!nome) { en.textContent = 'Informe o nome ou @ do perfil.'; ok = false; }
+      var url = normUrl(raw);
+      if (!raw.trim() || url === null) { var eu = $('#e-url'); eu.className = 'hint err'; eu.textContent = !raw.trim() ? 'Informe o link da conta.' : 'Esse endereço não parece válido.'; ok = false; }
+      if (!ok) return;
+      var data = { canal: canal, nome: nome, url: url, desc: $('#f-desc').value.trim() };
+      if (ctx.id) { Object.assign(byId(profiles, ctx.id), data); toast('Perfil atualizado.'); }
+      else { data.id = ++uid; profiles.push(data); toast('Perfil adicionado.'); }
+      closeDrawer(); renderProfiles();
+    } else {
+      var date = $('#f-date').value;
+      if (!date) { $('#e-date').hidden = false; return; }
+      var canalB = $('#f-canal').value, id = ctx.id;
+      Promise.all([readFile($('#f-antes').files[0]), readFile($('#f-depois').files[0])]).then(function (r) {
+        if (id) {
+          var it = byId(bas, id); it.canal = canalB; it.date = date;
+          if (r[0]) it.antes = r[0]; if (r[1]) it.depois = r[1];
+          toast('Antes e depois atualizado.');
+        } else {
+          bas.unshift({ id: ++uid, canal: canalB, date: date, antes: r[0] || '', depois: r[1] || '' });
+          toast('Antes e depois adicionado.');
+        }
+        closeDrawer(); renderBA();
+      });
+    }
+  }
+
+  /* ---------- eventos ---------- */
+  function closeMenus() {
+    document.querySelectorAll('.menu').forEach(function (m) { m.hidden = true; });
+    document.querySelectorAll('[data-act="menu"]').forEach(function (k) { k.setAttribute('aria-expanded', 'false'); });
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-act]');
+    if (!t) { closeMenus(); return; }
+    var act = t.dataset.act, card = t.closest('[data-kind]');
+    var kind = card && card.dataset.kind, id = card && card.dataset.id;
+    var arr = kind === 'p' ? profiles : bas, item = card ? byId(arr, id) : null;
+    if (act === 'menu') {
+      var m = card.querySelector('.menu'), was = m.hidden; closeMenus();
+      m.hidden = !was; t.setAttribute('aria-expanded', String(was));
+      if (was) { var f = m.querySelector('button:not(:disabled)'); if (f) f.focus(); }
+      return;
+    }
+    closeMenus();
+    if (act === 'add-profile') openDrawer('p');
+    else if (act === 'add-ba') openDrawer('b');
+    else if (act === 'close') closeDrawer();
+    else if (act === 'edit') openDrawer(kind, id);
+    else if (act === 'copy') copy(item.url, 'Link copiado.');
+    else if (act === 'remove') { item.confirming = true; kind === 'p' ? renderProfiles() : renderBA(); }
+    else if (act === 'remove-no') { item.confirming = false; kind === 'p' ? renderProfiles() : renderBA(); }
+    else if (act === 'remove-yes') {
+      arr.splice(arr.indexOf(item), 1); kind === 'p' ? renderProfiles() : renderBA(); toast('Removido.');
+    }
+    else if (act === 'desc-edit') { item.editing = true; renderProfiles(); }
+    else if (act === 'desc-cancel') { item.editing = false; renderProfiles(); }
+    else if (act === 'desc-save') { item.desc = $('#de-' + id).value.trim(); item.editing = false; renderProfiles(); toast('Descrição salva.'); }
+  });
+  document.addEventListener('input', function (e) {
+    if (e.target.id && e.target.id.indexOf('de-') === 0) { var c = $('#dc-' + e.target.id.slice(3)); if (c) c.textContent = e.target.value.length + '/160'; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      if (!$('#drawer').hidden) { closeDrawer(); return; }
+      closeMenus();
+      var ed = profiles.filter(function (p) { return p.editing; })[0]; if (ed) { ed.editing = false; renderProfiles(); }
+    }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id && e.target.id.indexOf('de-') === 0) {
+      var p = byId(profiles, e.target.id.slice(3)); p.desc = e.target.value.trim(); p.editing = false; renderProfiles(); toast('Descrição salva.');
+    }
+  });
+  $('#scrim').addEventListener('click', closeDrawer);
+  $('#share').addEventListener('click', function () { copy(location.href, 'Link da página copiado.'); });
+  document.querySelectorAll('[data-stub]').forEach(function (b) { b.addEventListener('click', function () { toast('Esta aba não faz parte desta prévia.'); }); });
+
+  var fsel = $('#filtro');
+  CANAIS.slice(0, 3).forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; fsel.appendChild(o); });
+  fsel.addEventListener('change', function () { filter = fsel.value; renderBA(); });
+
+  renderProfiles(); renderBA();
+})();
+</script>
