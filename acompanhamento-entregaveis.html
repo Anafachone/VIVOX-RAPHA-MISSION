@@ -1,0 +1,635 @@
+<title>Entregáveis Hospital Visão</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: cabecalho + abas, filtros, cards (pastas) por ano. Clique abre o modal do entregavel: imagem com zoom, miniaturas, acoes, descricao e producao. */
+:root {
+  --bg: #F5EFE4;
+  --surface: #FFFCF4;
+  --stage: #EDE5D7;
+  --line: #E4DAC8;
+  --ink: #2A251E;
+  --muted: #7B7262;
+  --accent: #8C6430;
+  --accent-ink: #FFF8EA;
+  --chip: #E7DDCA;
+  --chip-ink: #5C5240;
+  --warn: #9A5516;
+  --danger: #B3402F;
+  --ph1: #E9E1D0;
+  --ph2: #D8CDB6;
+  --ph3: #C9A66A;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1B1813; --surface: #242019; --stage: #2D2920; --line: #3A3429; --ink: #EFE7D8; --muted: #A39984;
+    --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4;
+    --warn: #E0A964; --danger: #E27A68;
+    --ph1: #332E24; --ph2: #443D2F; --ph3: #8C6A3A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1B1813; --surface: #242019; --stage: #2D2920; --line: #3A3429; --ink: #EFE7D8; --muted: #A39984;
+  --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4;
+  --warn: #E0A964; --danger: #E27A68;
+  --ph1: #332E24; --ph2: #443D2F; --ph3: #8C6A3A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+h1 { font-size: 26px; line-height: 1.15; margin: 0 0 4px; font-weight: 600; letter-spacing: -.01em; }
+.sub { color: var(--muted); margin: 0; }
+.top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-outline { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; height: 40px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.btn-outline:hover { border-color: var(--accent); }
+select.inp-sel { appearance: none; background-color: var(--surface); border: 1px solid var(--line); border-radius: 10px; height: 40px; padding: 0 34px 0 14px; min-width: 210px; max-width: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237B7262' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; }
+select.inp-sel option { background: var(--surface); color: var(--ink); }
+
+.tabs { display: flex; gap: 26px; margin-top: 24px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { background: none; border: 0; padding: 10px 2px 12px; color: var(--muted); font-weight: 500; white-space: nowrap; position: relative; }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 600; }
+.tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+
+.btn { border-radius: 9px; height: 38px; padding: 0 16px; border: 1px solid transparent; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn.ghost:hover:not(:disabled) { border-color: var(--accent); }
+.btn.ghost:disabled { color: var(--muted); opacity: .6; }
+.btn.danger { background: var(--danger); color: #fff; }
+.btn.sm { height: 32px; padding: 0 12px; font-weight: 500; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+.filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
+.fgroup { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; }
+.filters .grow { margin-left: auto; }
+.help { color: var(--muted); font-size: 12.5px; margin: 14px 0 0; }
+
+/* anos e cards */
+.year { margin-top: 26px; }
+.year-head { display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.year-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
+.year-head span { font-size: 12.5px; color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 14px; margin-top: 16px; }
+.dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; min-width: 0; }
+.dcard:hover { border-color: var(--accent); }
+.dcard.dragging { opacity: .4; }
+.dcard.over { outline: 2px dashed var(--accent); outline-offset: 2px; }
+.dth { position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; color: var(--chip-ink); }
+.dth svg { width: 34px; height: 34px; opacity: .7; }
+.dth.v0 { background: linear-gradient(135deg, var(--ph1), var(--ph2)); }
+.dth.v1 { background: linear-gradient(135deg, var(--ph2), var(--ph3)); }
+.dth.v2 { background: linear-gradient(200deg, var(--ph3), var(--ph1)); }
+.dth img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.badge { position: absolute; right: 8px; bottom: 8px; background: rgba(30,26,20,.62); color: #fff; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.dbody { padding: 12px 14px 14px; min-width: 0; }
+.dtitle { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dmeta { font-size: 12px; color: var(--muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty-note { color: var(--muted); padding: 22px; border: 1px dashed var(--line); border-radius: 14px; text-align: center; margin-top: 22px; }
+
+/* modal */
+.overlay { position: fixed; inset: 0; z-index: 20; background: rgba(20,16,10,.5); display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.modal { position: relative; width: min(680px, 100%); max-height: 100%; overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; display: flex; flex-direction: column; }
+.modal.big { width: min(1100px, 100%); height: 100%; }
+.stage-wrap { position: relative; background: var(--stage); flex: none; }
+.stage { height: 300px; overflow: auto; display: flex; padding: 56px 0 56px; }
+.modal.big .stage { height: min(62vh, 640px); }
+.stage img { margin: auto; max-width: none; height: auto; display: block; }
+.ph { margin: auto; aspect-ratio: 16 / 7; background: linear-gradient(135deg, var(--ph2), var(--ph3)); color: var(--chip-ink); display: grid; place-items: center; align-content: center; gap: 6px; font-size: 12.5px; text-align: center; padding: 8px; min-width: 120px; }
+.ph svg { width: 34px; height: 34px; opacity: .7; }
+.sq { position: absolute; top: 14px; width: 36px; height: 36px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink); z-index: 2; }
+.sq:hover { border-color: var(--accent); }
+.sq svg { width: 16px; height: 16px; }
+.sq.l { left: 14px; } .sq.r { right: 14px; }
+.arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; z-index: 2; }
+.arrow:hover { border-color: var(--accent); }
+.arrow.l { left: 12px; } .arrow.r { right: 12px; }
+.arrow svg { width: 16px; height: 16px; }
+.zoom { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; display: flex; align-items: center; gap: 2px; padding: 3px 6px; z-index: 2; }
+.zoom button { background: none; border: 0; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; }
+.zoom button:hover:not(:disabled) { background: var(--chip); }
+.zoom button:disabled { opacity: .4; }
+.zoom svg { width: 16px; height: 16px; }
+.zoom span { font-weight: 600; font-size: 12.5px; min-width: 46px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.thumbs { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 6px; }
+.thw { position: relative; }
+.th { width: 56px; height: 64px; border-radius: 9px; border: 1px solid var(--line); background: var(--stage); padding: 0; overflow: hidden; position: relative; display: block; }
+.th.sel { border: 2px solid var(--ink); }
+.th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.th .mini { width: 100%; height: 100%; background: linear-gradient(135deg, var(--ph2), var(--ph3)); display: block; }
+.th .capa { position: absolute; left: 3px; bottom: 3px; background: rgba(30,26,20,.78); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 99px; }
+.th.add { border: 1.5px dashed var(--muted); background: transparent; color: var(--muted); display: grid; place-items: center; font-size: 22px; }
+.th.add:hover { border-color: var(--accent); color: var(--accent); }
+.rmx { position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); color: var(--danger); display: grid; place-items: center; padding: 0; z-index: 1; }
+.rmx:hover { border-color: var(--danger); }
+.rmx svg { width: 10px; height: 10px; }
+.inline-confirm { margin: 8px 20px 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.inline-confirm span { font-weight: 500; }
+.inline-confirm div { display: flex; gap: 8px; }
+
+.info { padding: 12px 20px 0; display: flex; flex-direction: column; gap: 6px; }
+.tag { align-self: flex-start; background: var(--chip); color: var(--chip-ink); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; }
+.title-row { display: flex; align-items: flex-start; gap: 8px; }
+.title-row h2 { margin: 0; font-size: 18px; line-height: 1.25; font-weight: 700; text-transform: uppercase; overflow-wrap: anywhere; flex: 1; }
+.icon-btn { background: none; border: 0; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--muted); flex: none; }
+.icon-btn:hover { background: var(--chip); color: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; }
+.meta1 { color: var(--muted); font-size: 13px; }
+.meta2 { color: var(--muted); font-size: 12.5px; }
+.actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 20px 16px; }
+.actions .chev { background: none; border: 0; width: 28px; height: 28px; display: grid; place-items: center; color: var(--ink); border-radius: 8px; }
+.actions .chev:hover:not(:disabled) { background: var(--chip); }
+.actions .chev:disabled { color: var(--muted); opacity: .5; }
+.actions .chev svg { width: 16px; height: 16px; }
+.cover-btn { background: none; border: 0; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; font-weight: 500; padding: 4px 6px; border-radius: 8px; }
+.cover-btn:hover:not(:disabled) { background: var(--chip); color: var(--ink); }
+.cover-btn svg { width: 16px; height: 16px; }
+.del-item { background: none; border: 0; color: var(--danger); font-weight: 600; padding: 4px 6px; border-radius: 8px; }
+.del-item:hover { background: var(--chip); }
+
+/* blocos novos: descricao e producao */
+.blk { border-top: 1px solid var(--line); padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.blk-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.blk-h h3 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.desc-t { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.desc-t.empty { color: var(--muted); font-style: italic; }
+.inp { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%; font-weight: 400; }
+.inp:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+textarea.inp { min-height: 88px; resize: vertical; }
+label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 13px; }
+.hint { font-size: 12px; font-weight: 400; color: var(--muted); }
+.hint.err { color: var(--danger); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row-btns { display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.row-btns .count { margin-right: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; }
+.tile .l { font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tile .n { font-size: 34px; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.tile.ent .n { color: var(--accent); }
+.bar { height: 8px; border-radius: 99px; background: var(--chip); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.prog-t { font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.prog-t .warn { color: var(--warn); font-weight: 500; }
+.regs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.reg { padding: 10px 14px; display: grid; grid-template-columns: 92px 1fr auto; gap: 4px 12px; align-items: center; border-top: 1px solid var(--line); }
+.reg:first-child { border-top: 0; }
+.reg .d { font-weight: 600; font-variant-numeric: tabular-nums; }
+.reg .q { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.reg .q b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.reg .note { grid-column: 2 / 4; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.reg .acts { display: flex; gap: 6px; }
+.reg .acts button { background: none; border: 0; padding: 4px 6px; border-radius: 6px; font-size: 12.5px; color: var(--muted); }
+.reg .acts button:hover { background: var(--chip); color: var(--ink); }
+.reg .acts .del { color: var(--danger); }
+.reg .cf { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.rform { border: 1px solid var(--accent); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); }
+.rform .inp { background: var(--surface); }
+.none-note { color: var(--muted); font-size: 13px; margin: 0; }
+
+.foot { border-top: 1px solid var(--line); padding: 12px 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; position: sticky; bottom: 0; background: var(--surface); border-radius: 0 0 18px 18px; }
+.foot .nav { background: none; border: 0; font-weight: 500; padding: 6px 4px; border-radius: 8px; }
+.foot .nav:hover:not(:disabled) { color: var(--accent); }
+.foot .nav:disabled { color: var(--muted); opacity: .5; }
+.foot .close { margin-left: auto; }
+.newform { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.newform h2 { margin: 0; font-size: 18px; }
+.metaform { display: flex; flex-direction: column; gap: 12px; padding: 4px 0; }
+
+#toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg);
+  padding: 10px 16px; border-radius: 10px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
+
+@media (max-width: 700px) {
+  h1 { font-size: 22px; }
+  .filters .grow { margin-left: 0; width: 100%; }
+  .filters .grow .btn { width: 100%; }
+  .fgroup { flex: 1 1 100%; }
+  select.inp-sel { width: 100%; }
+  .reg { grid-template-columns: 1fr auto; }
+  .reg .q, .reg .note { grid-column: 1 / -1; }
+  .stage { height: 240px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .modal { animation: pop .16s ease-out; }
+  @keyframes pop { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Hospital Visão</h1>
+      <p class="sub">Registro e conferência das postagens, formatos e métricas da conta.</p>
+    </div>
+    <div class="top-actions">
+      <select class="inp-sel" id="cliente" aria-label="Cliente" style="min-width:190px"><option>Hospital Visão</option></select>
+      <button class="btn-outline" id="share" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/></svg>
+        Compartilhar
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Seções do acompanhamento">
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Visão geral</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Estratégia</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Publicações</button>
+    <button class="tab" role="tab" aria-selected="true" type="button">Entregáveis</button>
+    <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Propostas</button>
+  </nav>
+
+  <div class="filters">
+    <label class="fgroup">Tipo<select class="inp-sel" id="tipo"></select></label>
+    <label class="fgroup">Ordenar por
+      <select class="inp-sel" id="ordem">
+        <option value="custom">Ordem personalizada</option>
+        <option value="new">Data (mais recente)</option>
+        <option value="old">Data (mais antiga)</option>
+        <option value="az">Nome (A a Z)</option>
+      </select>
+    </label>
+    <div class="grow">
+      <button class="btn primary" type="button" data-act="add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Novo entregável
+      </button>
+    </div>
+  </div>
+  <p class="help">Arraste os cards para mudar a ordem dentro de cada ano. Clique em um card para abrir o entregável. O cliente vê a mesma ordem no portal.</p>
+
+  <div id="years-list"></div>
+</div>
+
+<div class="overlay" id="overlay" hidden><div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Entregável"></div></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  var IC = {
+    img: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.1 2.1 0 00-4-4L4 16z"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    expand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>',
+    left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+    right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+    minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-4-4"/></svg>',
+    zin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M8 11h6M11 8v6M20 20l-4-4"/></svg>',
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>'
+  };
+
+  var uid = 1000;
+  var mkFiles = function (n) { var a = []; for (var k = 0; k < n; k++) a.push({ id: ++uid, src: '', name: '', size: 0 }); return a; };
+  var raw = [
+    [1, 'TV INDOOR', 'INDOOR', '2026-01-21', 2026, 5], [2, 'Painel de confirmações', 'Confraternização', '2026-11-09', 2026, 2],
+    [3, 'NOVEMBRO AZUL', 'CAMPANHA', '2026-11-01', 2026, 1], [4, 'REVISTA', 'Revista', '2026-09-03', 2026, 2],
+    [5, 'Flyer 2026', 'Flyer 2026', '2026-09-01', 2026, 1], [6, 'Copa do Mundo', 'CAMPANHA', '2026-06-04', 2026, 1],
+    [7, 'Visão no esporte', 'CAMPANHA', '2026-04-29', 2026, 5], [8, 'Pdfs de orientação', 'PDFs', '2026-04-22', 2026, 5]
+  ];
+  [1, 1, 1, 1, 2, 1, 1, 1, 1, 1].forEach(function (n, i) { raw.push([20 + i, 'Título a preencher', 'A definir', '', 2025, n]); });
+  var items = raw.map(function (r) {
+    var f = mkFiles(r[5]);
+    return { id: r[0], titulo: r[1], tipo: r[2], date: r[3], ano: r[4], files: f, capa: f[0].id, desc: '', regs: [] };
+  });
+
+  var tipoSel = 'all', ordem = 'custom';
+  var ctx = null, lastFocus = null, dragId = null;
+
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var fmtDate = function (iso) { var p = (iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : ''; };
+  var byId = function (id) { return items.filter(function (x) { return x.id === +id; })[0]; };
+  var plural = function (n, a, b) { return n + ' ' + (n === 1 ? a : b); };
+  var fmtSize = function (b) { return b < 1048576 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1048576).toFixed(1).replace('.', ',') + ' MB'; };
+  var cover = function (it) { return it.files.filter(function (f) { return f.id === it.capa; })[0] || it.files[0] || null; };
+
+  var toastT;
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2600);
+  }
+
+  /* ---------- filtros e lista ---------- */
+  function syncTipos() {
+    var counts = {}, order = [];
+    items.forEach(function (i) { if (!counts[i.tipo]) { counts[i.tipo] = 0; order.push(i.tipo); } counts[i.tipo]++; });
+    if (tipoSel !== 'all' && !counts[tipoSel]) tipoSel = 'all';
+    $('#tipo').innerHTML = '<option value="all">Todos os tipos (' + items.length + ')</option>' +
+      order.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + ' (' + counts[t] + ')</option>'; }).join('');
+    $('#tipo').value = tipoSel;
+  }
+  function sorted(list) {
+    var l = list.slice();
+    if (ordem === 'new') l.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+    else if (ordem === 'old') l.sort(function (a, b) { return (a.date || '9999').localeCompare(b.date || '9999'); });
+    else if (ordem === 'az') l.sort(function (a, b) { return a.titulo.localeCompare(b.titulo, 'pt-BR'); });
+    return l;
+  }
+  function renderList() {
+    var list = items.filter(function (i) { return tipoSel === 'all' || i.tipo === tipoSel; });
+    var box = $('#years-list');
+    if (!list.length) { box.innerHTML = '<div class="empty-note">Nenhum entregável ainda. Use o botão Novo entregável.</div>'; return; }
+    var anos = []; list.forEach(function (i) { if (anos.indexOf(i.ano) < 0) anos.push(i.ano); });
+    anos.sort(function (a, b) { return b - a; });
+    box.innerHTML = anos.map(function (y) {
+      var group = sorted(list.filter(function (i) { return i.ano === y; }));
+      return '<section class="year" aria-label="Entregáveis de ' + y + '"><div class="year-head"><h2>' + y + '</h2><span>' + plural(group.length, 'entregável', 'entregáveis') + '</span></div><div class="cards">' +
+        group.map(function (i) {
+          var cv = cover(i), meta = esc(i.tipo) + (i.date ? ' · ' + fmtDate(i.date) : '');
+          return '<div class="dcard" role="button" tabindex="0" draggable="' + (ordem === 'custom') + '" data-id="' + i.id + '" aria-label="Abrir ' + esc(i.titulo) + '">' +
+            '<div class="dth v' + (i.id % 3) + '">' + (cv && cv.src ? '<img src="' + cv.src + '" alt="">' : IC.img) + '<span class="badge">' + plural(i.files.length, 'arquivo', 'arquivos') + '</span></div>' +
+            '<div class="dbody"><div class="dtitle" title="' + esc(i.titulo) + '">' + esc(i.titulo) + '</div><div class="dmeta">' + meta + '</div></div></div>';
+        }).join('') + '</div></section>';
+    }).join('');
+  }
+  function renderAll() { syncTipos(); renderList(); }
+  function order() { return Array.prototype.map.call(document.querySelectorAll('.dcard'), function (c) { return +c.dataset.id; }); }
+
+  /* ---------- arrastar para reordenar ---------- */
+  document.addEventListener('dragstart', function (e) {
+    var c = e.target.closest && e.target.closest('.dcard'); if (!c || ordem !== 'custom') return;
+    dragId = +c.dataset.id; c.classList.add('dragging');
+    try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(dragId)); } catch (x) {}
+  });
+  document.addEventListener('dragend', function () { dragId = null; document.querySelectorAll('.dragging,.over').forEach(function (n) { n.classList.remove('dragging', 'over'); }); });
+  document.addEventListener('dragover', function (e) {
+    var c = e.target.closest && e.target.closest('.dcard'); if (!c || dragId == null) return;
+    var from = byId(dragId), to = byId(c.dataset.id);
+    if (from && to && from.ano === to.ano && from !== to) { e.preventDefault(); document.querySelectorAll('.over').forEach(function (n) { n.classList.remove('over'); }); c.classList.add('over'); }
+  });
+  document.addEventListener('drop', function (e) {
+    var c = e.target.closest && e.target.closest('.dcard'); if (!c || dragId == null) return;
+    e.preventDefault();
+    var from = byId(dragId), to = byId(c.dataset.id);
+    if (!from || !to || from === to || from.ano !== to.ano) return;
+    items.splice(items.indexOf(from), 1);
+    items.splice(items.indexOf(to), 0, from);
+    renderList(); toast('Ordem atualizada.');
+  });
+
+  /* ---------- modal ---------- */
+  function totals(it) { var p = 0, e = 0; it.regs.forEach(function (r) { p += r.prod; e += r.ent; }); return { p: p, e: e }; }
+
+  function metaForm(it) {
+    var v = it || { titulo: '', tipo: '', date: '', ano: 2026 };
+    var tipos = []; items.forEach(function (i) { if (tipos.indexOf(i.tipo) < 0) tipos.push(i.tipo); });
+    var anos = [2027, 2026, 2025, 2024, 2023];
+    return '<form class="metaform" id="mf" novalidate>' +
+      '<label class="f" for="m-titulo">Título<input class="inp" id="m-titulo" type="text" value="' + esc(v.titulo) + '" autocomplete="off"><span class="hint err" id="m-e1" hidden>Informe o título.</span></label>' +
+      '<label class="f" for="m-tipo">Tipo<input class="inp" id="m-tipo" type="text" list="tipos" value="' + esc(v.tipo) + '" placeholder="Ex.: CAMPANHA, PDFs" autocomplete="off"><datalist id="tipos">' + tipos.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('') + '</datalist><span class="hint err" id="m-e2" hidden>Informe o tipo.</span></label>' +
+      '<div class="two"><label class="f" for="m-date">Data <span class="hint">(opcional)</span><input class="inp" id="m-date" type="date" value="' + esc(v.date) + '"></label>' +
+      '<label class="f" for="m-ano">Ano<select class="inp" id="m-ano">' + anos.map(function (a) { return '<option' + (a === v.ano ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="row-btns"><button class="btn ghost sm" type="button" data-act="' + (it ? 'meta-cancel' : 'close') + '">Cancelar</button><button class="btn primary sm" type="submit">' + (it ? 'Salvar' : 'Criar entregável') + '</button></div></form>';
+  }
+  function regForm(r) {
+    var v = r || { date: '2026-11-16', prod: '', ent: 0, note: '' };
+    return '<form class="rform" id="rf" novalidate>' +
+      '<label class="f" for="r-date">Data de produção<input class="inp" id="r-date" type="date" value="' + esc(v.date) + '"></label>' +
+      '<div class="two"><label class="f" for="r-prod">Produzidos<input class="inp" id="r-prod" type="number" min="0" step="1" inputmode="numeric" value="' + esc(v.prod) + '"></label>' +
+      '<label class="f" for="r-ent">Entregues<input class="inp" id="r-ent" type="number" min="0" step="1" inputmode="numeric" value="' + esc(v.ent) + '"></label></div>' +
+      '<label class="f" for="r-note">Observação <span class="hint">(opcional)</span><input class="inp" id="r-note" type="text" maxlength="80" value="' + esc(v.note) + '" placeholder="Ex.: lote de janeiro" autocomplete="off"></label>' +
+      '<span class="hint err" id="r-err" hidden></span>' +
+      '<div class="row-btns"><button class="btn ghost sm" type="button" data-act="r-cancel">Cancelar</button><button class="btn primary sm" type="submit">' + (r ? 'Salvar registro' : 'Registrar') + '</button></div></form>';
+  }
+
+  function viewHtml(it) {
+    var files = it.files, n = files.length;
+    if (ctx.idx > n - 1) ctx.idx = n - 1; if (ctx.idx < 0 && n) ctx.idx = 0;
+    var idx = ctx.idx, f = n ? files[idx] : null, isCover = f && f.id === it.capa;
+    var ord = order(), pos = ord.indexOf(it.id);
+    var stage;
+    if (!f) stage = '<div class="ph" style="width:70%">' + IC.img + '<span>Nenhum arquivo ainda. Use o + abaixo para adicionar.</span></div>';
+    else if (f.src) stage = '<img src="' + f.src + '" alt="Arquivo ' + (idx + 1) + ' de ' + n + ' de ' + esc(it.titulo) + '" style="width:' + ctx.zoom + '%">';
+    else stage = '<div class="ph" style="width:' + ctx.zoom + '%">' + IC.img + '<span>Imagem de exemplo</span></div>';
+
+    var thumbs = files.map(function (x, i) {
+      return '<div class="thw"><button class="th' + (i === idx ? ' sel' : '') + '" type="button" data-act="pick" data-i="' + i + '" aria-label="Ver arquivo ' + (i + 1) + (x.id === it.capa ? ' (capa)' : '') + '">' +
+        (x.src ? '<img src="' + x.src + '" alt="">' : '<span class="mini"></span>') + (x.id === it.capa ? '<span class="capa">Capa</span>' : '') + '</button>' +
+        '<button class="rmx" type="button" data-act="file-del" data-i="' + i + '" aria-label="Remover arquivo ' + (i + 1) + '">' + IC.x + '</button></div>';
+    }).join('') + '<button class="th add" type="button" data-act="file-add" aria-label="Adicionar arquivos">+</button><input type="file" id="file-in" accept="image/*" multiple hidden>';
+
+    var fileConfirm = ctx.confirm && ctx.confirm.indexOf('file:') === 0
+      ? '<div class="inline-confirm"><span>Remover o arquivo ' + (+ctx.confirm.slice(5) + 1) + '?</span><div><button class="btn ghost sm" type="button" data-act="confirm-no">Cancelar</button><button class="btn danger sm" type="button" data-act="file-del-yes">Remover</button></div></div>' : '';
+    var itemConfirm = ctx.confirm === 'item'
+      ? '<div class="inline-confirm"><span>Excluir este entregável, com arquivos e registros?</span><div><button class="btn ghost sm" type="button" data-act="confirm-no">Cancelar</button><button class="btn danger sm" type="button" data-act="item-del-yes">Excluir</button></div></div>' : '';
+
+    var titleBlock = ctx.editMeta ? '<div class="info">' + metaForm(it) + '</div>' :
+      '<div class="info"><span class="tag">' + esc(it.tipo) + '</span>' +
+      '<div class="title-row"><h2 id="m-title">' + esc(it.titulo) + '</h2><button class="icon-btn" type="button" data-act="meta-edit" aria-label="Editar título, tipo e data">' + IC.pen + '</button></div>' +
+      '<div class="meta1">' + (it.date ? fmtDate(it.date) + ' · ' : '') + plural(n, 'arquivo', 'arquivos') + '</div>' +
+      (f ? '<div class="meta2">' + (idx + 1) + ' de ' + n + (isCover ? ' · capa' : '') + (f.size ? ' · ' + fmtSize(f.size) : '') + '</div>' : '') + '</div>';
+
+    var actions = '<div class="actions"><button class="btn ghost sm" type="button" data-act="download"' + (f ? '' : ' disabled') + '>' + IC.down + 'Baixar</button>' +
+      '<span style="display:flex;gap:2px"><button class="chev" type="button" data-act="prev-file" aria-label="Arquivo anterior"' + (n > 1 ? '' : ' disabled') + '>' + IC.left + '</button><button class="chev" type="button" data-act="next-file" aria-label="Próximo arquivo"' + (n > 1 ? '' : ' disabled') + '>' + IC.right + '</button></span>' +
+      '<button class="cover-btn" type="button" data-act="set-cover"' + (!f || isCover ? ' disabled' : '') + '>' + IC.img + (isCover ? 'É a capa' : 'Definir como capa') + '</button>' +
+      '<button class="del-item" type="button" data-act="item-del" style="margin-left:auto">Excluir entregável</button></div>';
+
+    /* descricao */
+    var descBlk = '<section class="blk" aria-label="Descrição"><div class="blk-h"><h3>Descrição</h3>' + (ctx.editDesc ? '' : '<button class="btn ghost sm" type="button" data-act="desc-edit">' + IC.pen + (it.desc ? 'Editar' : 'Adicionar') + '</button>') + '</div>' +
+      (ctx.editDesc
+        ? '<textarea class="inp" id="d-in" maxlength="400" aria-label="Descrição do entregável" placeholder="Descreva o que é este entregável, onde é usado e o que foi produzido.">' + esc(it.desc) + '</textarea><div class="row-btns"><span class="count" id="d-count">' + it.desc.length + '/400</span><button class="btn ghost sm" type="button" data-act="desc-cancel">Cancelar</button><button class="btn primary sm" type="button" data-act="desc-save">Salvar</button></div>'
+        : '<p class="desc-t' + (it.desc ? '' : ' empty') + '">' + (it.desc ? esc(it.desc) : 'Sem descrição ainda.') + '</p>') + '</section>';
+
+    /* producao */
+    var t = totals(it), pct = t.p ? Math.min(100, Math.round(t.e / t.p * 100)) : 0, status;
+    if (!t.p && !t.e) status = '<span>Nenhum registro ainda.</span>';
+    else if (t.e > t.p) status = '<span class="warn">Entregues acima dos produzidos. Confira os registros.</span><span>' + t.e + ' de ' + t.p + '</span>';
+    else if (t.e === t.p) status = '<span>Tudo entregue</span><span>' + t.e + ' de ' + t.p + '</span>';
+    else status = '<span>Faltam entregar ' + (t.p - t.e) + '</span><span>' + t.e + ' de ' + t.p + ' (' + pct + '%)</span>';
+    var regs = it.regs.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var list = regs.length ? '<ul class="regs">' + regs.map(function (r) {
+      if (ctx.form === r.id) return '<li class="reg" style="display:block">' + regForm(r) + '</li>';
+      return '<li class="reg" data-rid="' + r.id + '"><span class="d">' + fmtDate(r.date) + '</span>' +
+        '<span class="q"><span>Produzidos <b>' + r.prod + '</b></span><span>Entregues <b>' + r.ent + '</b></span></span>' +
+        (r.confirming ? '' : '<span class="acts"><button type="button" data-act="r-edit">Editar</button><button type="button" class="del" data-act="r-del">Remover</button></span>') +
+        (r.note ? '<span class="note">' + esc(r.note) + '</span>' : '') +
+        (r.confirming ? '<span class="cf"><span>Remover este registro?</span><span class="acts"><button type="button" data-act="r-del-no">Cancelar</button><button type="button" class="del" data-act="r-del-yes">Remover</button></span></span>' : '') + '</li>';
+    }).join('') + '</ul>' : '';
+    var prodBlk = '<section class="blk" aria-label="Produção"><div class="blk-h"><h3>Total produzido</h3>' + (ctx.form === 'new' ? '' : '<button class="btn ghost sm" type="button" data-act="r-add">' + IC.plus + 'Novo registro</button>') + '</div>' +
+      '<div class="tiles"><div class="tile"><span class="l">Produzido</span><span class="n">' + t.p + '</span></div><div class="tile ent"><span class="l">Entregue</span><span class="n">' + t.e + '</span></div></div>' +
+      '<div><div class="bar" role="img" aria-label="Entregues em relação aos produzidos: ' + pct + '%"><i style="width:' + pct + '%"></i></div><div class="prog-t">' + status + '</div></div>' +
+      (regs.length || ctx.form === 'new' ? '' : '<p class="none-note">Registre quantos foram feitos, quando e quantos já foram entregues.</p>') +
+      (ctx.form === 'new' ? regForm(null) : '') + list + '</section>';
+
+    return '<div class="stage-wrap">' +
+      '<button class="sq l" type="button" data-act="expand" aria-label="' + (ctx.big ? 'Reduzir' : 'Ampliar') + ' janela">' + IC.expand + '</button>' +
+      '<button class="sq r" type="button" data-act="close" aria-label="Fechar">' + IC.x + '</button>' +
+      '<div class="stage" id="stage">' + stage + '</div>' +
+      (n > 1 ? '<button class="arrow l" type="button" data-act="prev-file" aria-label="Arquivo anterior">' + IC.left + '</button><button class="arrow r" type="button" data-act="next-file" aria-label="Próximo arquivo">' + IC.right + '</button>' : '') +
+      '<div class="zoom" role="group" aria-label="Zoom"><button type="button" data-act="zoom-out" aria-label="Diminuir zoom"' + (ctx.zoom <= 50 ? ' disabled' : '') + '>' + IC.minus + '</button><span>' + ctx.zoom + '%</span><button type="button" data-act="zoom-in" aria-label="Aumentar zoom"' + (ctx.zoom >= 300 ? ' disabled' : '') + '>' + IC.zin + '</button></div></div>' +
+      '<div class="thumbs">' + thumbs + '</div>' + fileConfirm + titleBlock + actions + itemConfirm + descBlk + prodBlk +
+      '<div class="foot"><button class="nav" type="button" data-act="nav-prev"' + (pos > 0 ? '' : ' disabled') + '>← Anterior</button><button class="nav" type="button" data-act="nav-next"' + (pos >= 0 && pos < ord.length - 1 ? '' : ' disabled') + '>Próximo →</button><button class="btn ghost close" type="button" data-act="close">Fechar</button></div>';
+  }
+  function newHtml() {
+    return '<div class="newform"><h2>Novo entregável</h2>' + metaForm(null) + '<p class="none-note">Depois de criar, adicione os arquivos, a descrição e os registros de produção.</p></div>';
+  }
+
+  function render() {
+    var m = $('#modal');
+    m.className = 'modal' + (ctx.big ? ' big' : '');
+    m.innerHTML = ctx.mode === 'new' ? newHtml() : viewHtml(byId(ctx.id));
+    $('#overlay').hidden = false;
+    var mf = $('#mf'); if (mf) mf.addEventListener('submit', saveMeta);
+    var rf = $('#rf'); if (rf) rf.addEventListener('submit', saveReg);
+    var fi = $('#file-in'); if (fi) fi.addEventListener('change', addFiles);
+    var di = $('#d-in'); if (di) di.addEventListener('input', function () { $('#d-count').textContent = di.value.length + '/400'; });
+    var fs = ctx.focus; ctx.focus = null;
+    var el = fs ? m.querySelector(fs) : null;
+    if (el) { el.focus(); if (el.select && el.type !== 'date') try { el.setSelectionRange(el.value.length, el.value.length); } catch (x) {} }
+    else if (ctx.first) { var c = m.querySelector('[data-act="close"]'); if (c) c.focus(); }
+    ctx.first = false;
+  }
+  function openModal(id) {
+    lastFocus = document.activeElement;
+    ctx = { mode: 'view', id: id, idx: 0, zoom: 100, form: null, confirm: null, editDesc: false, editMeta: false, big: false, first: true, focus: null };
+    render();
+  }
+  function openNew() {
+    lastFocus = document.activeElement;
+    ctx = { mode: 'new', big: false, focus: '#m-titulo' };
+    render();
+  }
+  function closeModal() {
+    $('#overlay').hidden = true; $('#modal').innerHTML = ''; ctx = null;
+    if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+  }
+
+  function saveMeta(e) {
+    e.preventDefault();
+    var titulo = $('#m-titulo').value.trim(), tipo = $('#m-tipo').value.trim(), ok = true;
+    $('#m-e1').hidden = !!titulo; if (!titulo) ok = false;
+    $('#m-e2').hidden = !!tipo; if (!tipo) ok = false;
+    if (!ok) return;
+    var data = { titulo: titulo, tipo: tipo, date: $('#m-date').value, ano: +$('#m-ano').value };
+    if (ctx.mode === 'new') {
+      data.id = ++uid; data.files = []; data.capa = null; data.desc = ''; data.regs = [];
+      items.unshift(data); renderAll(); toast('Entregável criado. Adicione os arquivos.');
+      var id = data.id, keep = lastFocus; openModal(id); lastFocus = keep; return;
+    }
+    Object.assign(byId(ctx.id), data); ctx.editMeta = false; renderAll(); toast('Dados atualizados.'); render();
+  }
+  function saveReg(e) {
+    e.preventDefault();
+    var it = byId(ctx.id), date = $('#r-date').value, p = $('#r-prod').value.trim(), en = $('#r-ent').value.trim(), er = $('#r-err'), msg = '';
+    if (!date) msg = 'Informe a data.';
+    else if (!/^\d+$/.test(p) || !/^\d+$/.test(en)) msg = 'Informe números inteiros em Produzidos e Entregues (use 0 se nenhum).';
+    else if (+p === 0 && +en === 0) msg = 'Informe ao menos um item produzido ou entregue.';
+    if (msg) { er.textContent = msg; er.hidden = false; return; }
+    var data = { date: date, prod: parseInt(p, 10), ent: parseInt(en, 10), note: $('#r-note').value.trim() };
+    if (ctx.form === 'new') { data.id = ++uid; it.regs.push(data); toast('Registro adicionado.'); }
+    else { Object.assign(it.regs.filter(function (r) { return r.id === ctx.form; })[0], data); toast('Registro atualizado.'); }
+    ctx.form = null; render();
+  }
+  function readFile(f) {
+    return new Promise(function (res) {
+      var r = new FileReader(); r.onload = function () { res({ id: ++uid, src: r.result, name: f.name, size: f.size }); }; r.onerror = function () { res(null); }; r.readAsDataURL(f);
+    });
+  }
+  function addFiles(e) {
+    var list = Array.prototype.slice.call(e.target.files || []); if (!list.length) return;
+    var it = byId(ctx.id);
+    Promise.all(list.map(readFile)).then(function (arr) {
+      arr = arr.filter(Boolean); if (!arr.length) { toast('Não foi possível ler os arquivos.'); return; }
+      arr.forEach(function (f) { it.files.push(f); });
+      if (it.capa == null) it.capa = arr[0].id;
+      ctx.idx = it.files.length - 1; ctx.zoom = 100; renderList(); render();
+      toast(arr.length === 1 ? 'Arquivo adicionado.' : arr.length + ' arquivos adicionados.');
+    });
+  }
+  function go(dir) {
+    var ord = order(), pos = ord.indexOf(ctx.id), to = ord[pos + dir];
+    if (to == null) return;
+    var keep = lastFocus; openModal(to); lastFocus = keep;
+  }
+
+  /* ---------- eventos ---------- */
+  document.addEventListener('click', function (e) {
+    if (e.target.id === 'overlay') { closeModal(); return; }
+    var t = e.target.closest('[data-act]');
+    if (t) {
+      var act = t.dataset.act;
+      if (act === 'add') { openNew(); return; }
+      if (!ctx) return;
+      var it = ctx.id ? byId(ctx.id) : null, i = t.dataset.i != null ? +t.dataset.i : null;
+      var rli = t.closest('[data-rid]'), reg = rli && it ? it.regs.filter(function (r) { return r.id === +rli.dataset.rid; })[0] : null;
+      var n = it ? it.files.length : 0;
+      if (act === 'close') { closeModal(); return; }
+      else if (act === 'expand') { ctx.big = !ctx.big; $('#modal').classList.toggle('big', ctx.big); return; }
+      else if (act === 'pick') { ctx.idx = i; ctx.zoom = 100; }
+      else if (act === 'prev-file' && n > 1) { ctx.idx = (ctx.idx - 1 + n) % n; ctx.zoom = 100; }
+      else if (act === 'next-file' && n > 1) { ctx.idx = (ctx.idx + 1) % n; ctx.zoom = 100; }
+      else if (act === 'zoom-in') ctx.zoom = Math.min(300, ctx.zoom + 25);
+      else if (act === 'zoom-out') ctx.zoom = Math.max(50, ctx.zoom - 25);
+      else if (act === 'download') { toast('O download não está disponível nesta prévia.'); return; }
+      else if (act === 'set-cover') { it.capa = it.files[ctx.idx].id; renderList(); toast('Capa atualizada.'); }
+      else if (act === 'file-add') { $('#file-in').click(); return; }
+      else if (act === 'file-del') ctx.confirm = 'file:' + i;
+      else if (act === 'confirm-no') ctx.confirm = null;
+      else if (act === 'file-del-yes') {
+        var k = +ctx.confirm.slice(5), gone = it.files.splice(k, 1)[0];
+        if (gone && gone.id === it.capa) it.capa = it.files.length ? it.files[0].id : null;
+        ctx.confirm = null; renderList(); toast('Arquivo removido.');
+      }
+      else if (act === 'item-del') ctx.confirm = 'item';
+      else if (act === 'item-del-yes') { items.splice(items.indexOf(it), 1); lastFocus = null; closeModal(); renderAll(); toast('Entregável excluído.'); return; }
+      else if (act === 'meta-edit') { ctx.editMeta = true; ctx.focus = '#m-titulo'; }
+      else if (act === 'meta-cancel') ctx.editMeta = false;
+      else if (act === 'desc-edit') { ctx.editDesc = true; ctx.focus = '#d-in'; }
+      else if (act === 'desc-cancel') ctx.editDesc = false;
+      else if (act === 'desc-save') { it.desc = $('#d-in').value.trim(); ctx.editDesc = false; toast('Descrição salva.'); }
+      else if (act === 'r-add') { ctx.form = 'new'; ctx.focus = '#r-prod'; }
+      else if (act === 'r-cancel') ctx.form = null;
+      else if (act === 'r-edit' && reg) { ctx.form = reg.id; ctx.focus = '#r-prod'; }
+      else if (act === 'r-del' && reg) reg.confirming = true;
+      else if (act === 'r-del-no' && reg) reg.confirming = false;
+      else if (act === 'r-del-yes' && reg) { it.regs.splice(it.regs.indexOf(reg), 1); toast('Registro removido.'); }
+      else if (act === 'nav-prev') { go(-1); return; }
+      else if (act === 'nav-next') { go(1); return; }
+      else return;
+      render();
+      return;
+    }
+    var c = e.target.closest('.dcard'); if (c) openModal(+c.dataset.id);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (ctx && e.key === 'Escape') { closeModal(); return; }
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (ctx && ctx.mode === 'view' && !/input|textarea|select/.test(tag)) {
+      var it = byId(ctx.id), n = it.files.length;
+      if (e.key === 'ArrowRight' && n > 1) { ctx.idx = (ctx.idx + 1) % n; ctx.zoom = 100; render(); return; }
+      if (e.key === 'ArrowLeft' && n > 1) { ctx.idx = (ctx.idx - 1 + n) % n; ctx.zoom = 100; render(); return; }
+    }
+    if (!ctx && (e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('dcard')) { e.preventDefault(); openModal(+e.target.dataset.id); }
+  });
+  $('#tipo').addEventListener('change', function (e) { tipoSel = e.target.value; renderList(); });
+  $('#ordem').addEventListener('change', function (e) { ordem = e.target.value; renderList(); });
+  $('#share').addEventListener('click', function () {
+    var fail = function () { toast('Não foi possível copiar. Selecione o endereço da página e copie manualmente.'); };
+    try { navigator.clipboard.writeText(location.href).then(function () { toast('Link da página copiado.'); }, fail); } catch (x) { fail(); }
+  });
+  document.querySelectorAll('[data-stub]').forEach(function (b) { b.addEventListener('click', function () { toast('Esta aba não faz parte desta prévia.'); }); });
+
+  renderAll();
+})();
+</script>
