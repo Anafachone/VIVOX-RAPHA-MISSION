@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: cabecalho + abas, faixa de resumo com o total geral, filtros, e grade de cards agrupada por ano. */
+/* Layout: cabecalho + abas, filtros, cards (pastas) agrupados por ano. Clique no card abre a visao geral da pasta em painel lateral. */
 :root {
   --bg: #F5EFE4;
   --surface: #FFFCF4;
@@ -15,6 +15,8 @@
   --accent-ink: #FFF8EA;
   --chip: #E7DDCA;
   --chip-ink: #5C5240;
+  --ok: #2F7D4F;
+  --warn: #9A5516;
   --danger: #B3402F;
   --ph1: #E9E1D0;
   --ph2: #D8CDB6;
@@ -24,14 +26,16 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #1B1813; --surface: #242019; --line: #3A3429; --ink: #EFE7D8; --muted: #A39984;
-    --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4; --danger: #E27A68;
+    --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4;
+    --ok: #7FC79B; --warn: #E0A964; --danger: #E27A68;
     --ph1: #332E24; --ph2: #443D2F; --ph3: #8C6A3A;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1B1813; --surface: #242019; --line: #3A3429; --ink: #EFE7D8; --muted: #A39984;
-  --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4; --danger: #E27A68;
+  --accent: #C99A57; --accent-ink: #1B1813; --chip: #3A3429; --chip-ink: #D8CCB4;
+  --ok: #7FC79B; --warn: #E0A964; --danger: #E27A68;
   --ph1: #332E24; --ph2: #443D2F; --ph3: #8C6A3A;
   color-scheme: dark;
 }
@@ -51,10 +55,7 @@ button { cursor: pointer; }
 h1 { font-size: 26px; line-height: 1.15; margin: 0 0 4px; font-weight: 600; letter-spacing: -.01em; }
 .sub { color: var(--muted); margin: 0; }
 .top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.sel, .btn-outline {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; height: 40px; padding: 0 14px;
-  display: inline-flex; align-items: center; gap: 8px; font-weight: 500;
-}
+.btn-outline { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; height: 40px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
 .btn-outline:hover { border-color: var(--accent); }
 select.inp-sel { appearance: none; background-color: var(--surface); border: 1px solid var(--line); border-radius: 10px; height: 40px; padding: 0 34px 0 14px; min-width: 210px; max-width: 100%;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237B7262' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -84,21 +85,9 @@ select.inp-sel option { background: var(--surface); color: var(--ink); }
 
 /* anos e cards */
 .year { margin-top: 26px; }
-.year-head { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.year-head { display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 .year-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
-.y-total { display: flex; align-items: baseline; gap: 6px; }
-.y-total b { font-size: 20px; font-variant-numeric: tabular-nums; }
-.y-total span { font-size: 12.5px; color: var(--muted); }
-.y-calc { font-size: 12.5px; color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
-.y-btn { margin-left: auto; }
-.adj-form { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-.adj-form label { font-size: 12px; font-weight: 600; display: flex; flex-direction: column; gap: 4px; }
-.adj-form .f-n { width: 150px; }
-.adj-form .f-note { flex: 1 1 220px; min-width: 0; }
-.adj-form .btns { display: flex; gap: 8px; }
-.adj-err { flex-basis: 100%; }
-.inp { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; width: 100%; font-weight: 400; }
-.inp:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.year-head span { font-size: 12.5px; color: var(--muted); }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 14px; margin-top: 16px; }
 .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; min-width: 0; }
 .dcard:hover { border-color: var(--accent); }
@@ -118,32 +107,66 @@ select.inp-sel option { background: var(--surface); color: var(--ink); }
 
 /* painel lateral */
 #scrim { position: fixed; inset: 0; background: rgba(20,16,10,.42); z-index: 20; }
-#drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100%); z-index: 21; background: var(--surface); border-left: 1px solid var(--line);
+#drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); z-index: 21; background: var(--surface); border-left: 1px solid var(--line);
   display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
-.d-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
-.d-head h2 { margin: 0; font-size: 17px; font-weight: 600; }
-.x { background: none; border: 0; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; color: var(--muted); }
+.d-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.d-head h2 { margin: 0; font-size: 18px; font-weight: 600; overflow-wrap: anywhere; }
+.d-head p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.x { background: none; border: 0; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; color: var(--muted); flex: none; }
 .x:hover { background: var(--chip); color: var(--ink); }
 .x svg { width: 18px; height: 18px; }
 form { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.d-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
+.d-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; flex: 1; }
 .d-foot { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 20px; border-top: 1px solid var(--line); }
 .d-foot .left { margin-right: auto; }
 label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 13px; }
+.inp { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%; font-weight: 400; }
+.inp:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .hint { font-size: 12px; font-weight: 400; color: var(--muted); }
 .hint.err { color: var(--danger); }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* visao geral da pasta */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.tile .l { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tile .n { font-size: 38px; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.tile.ent .n { color: var(--accent); }
+.bar { height: 8px; border-radius: 99px; background: var(--chip); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.prog { display: flex; flex-direction: column; gap: 6px; }
+.prog-t { font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.prog-t .warn { color: var(--warn); font-weight: 500; }
+.sec-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sec-h h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.regs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.reg { padding: 11px 14px; display: grid; grid-template-columns: 92px 1fr auto; gap: 4px 12px; align-items: center; border-top: 1px solid var(--line); }
+.reg:first-child { border-top: 0; }
+.reg .d { font-weight: 600; font-variant-numeric: tabular-nums; }
+.reg .q { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.reg .q b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.reg .note { grid-column: 2 / 4; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.reg .acts { display: flex; gap: 6px; }
+.reg .acts button { background: none; border: 0; padding: 4px 6px; border-radius: 6px; font-size: 12.5px; color: var(--muted); }
+.reg .acts button:hover { background: var(--chip); color: var(--ink); }
+.reg .acts .del { color: var(--danger); }
+.reg .cf { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.rform { border: 1px solid var(--accent); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); }
+.rform .inp { background: var(--surface); }
+.rform .btns { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.none-note { color: var(--muted); font-size: 13px; margin: 0; }
 
 #toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg);
   padding: 10px 16px; border-radius: 10px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
 
 @media (max-width: 700px) {
   h1 { font-size: 22px; }
-  .y-btn { margin-left: 0; }
   .filters .grow { margin-left: 0; width: 100%; }
   .filters .grow .btn { width: 100%; }
   .fgroup { flex: 1 1 100%; }
   select.inp-sel { width: 100%; }
+  .reg { grid-template-columns: 1fr auto; }
+  .reg .q, .reg .note { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: no-preference) {
   #drawer { animation: slide .18s ease-out; }
@@ -191,7 +214,7 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
       </button>
     </div>
   </div>
-  <p class="help">Arraste os cards para mudar a ordem dentro de cada ano. O cliente vê a mesma ordem no portal.</p>
+  <p class="help">Arraste os cards para mudar a ordem dentro de cada ano. Clique em um card para ver quantos foram produzidos e entregues. O cliente vê a mesma ordem no portal.</p>
 
   <div id="years-list"></div>
 </div>
@@ -205,6 +228,7 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
   var IMG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>';
   var XI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   var PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.1 2.1 0 00-4-4L4 16z"/></svg>';
+  var PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
   var uid = 100;
   var items = [
@@ -220,8 +244,8 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
   [1, 1, 1, 1, 2, 1, 1, 1, 1, 1].forEach(function (n, i) {
     items.push({ id: 20 + i, titulo: 'Título a preencher', tipo: 'A definir', date: '', ano: 2025, arq: n });
   });
-  var adj = {};
-  var adjEditing = null;
+  items.forEach(function (i) { i.regs = []; });
+
   var tipoSel = 'all', ordem = 'custom';
   var ctx = null, lastFocus = null, dragId = null, confirmDel = false;
 
@@ -235,42 +259,6 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
   function toast(msg) {
     var t = $('#toast'); t.textContent = msg; t.hidden = false;
     clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2400);
-  }
-
-  /* ---------- total por ano ---------- */
-  function yearInfo(y) {
-    var cards = items.filter(function (i) { return i.ano === y; }).length;
-    var a = adj[y] || { n: 0, note: '' };
-    return { cards: cards, n: a.n, note: a.note, total: cards + a.n };
-  }
-  function yearHead(y, shown) {
-    var inf = yearInfo(y);
-    var calc = inf.cards + ' cadastrados no portal' + (inf.n ? ' + ' + inf.n + ' de ajuste manual' : '') +
-      (shown !== inf.cards ? ' · mostrando ' + shown + ' pelo filtro' : '') + (inf.note ? ' · ' + inf.note : '');
-    var out = '<div class="year-head"><h2>' + y + '</h2>' +
-      '<div class="y-total"><b>' + inf.total + '</b><span>' + (inf.total === 1 ? 'entregável produzido' : 'entregáveis produzidos') + '</span></div>' +
-      '<span class="y-calc">' + esc(calc) + '</span>' +
-      (adjEditing === y ? '' : '<button class="btn ghost sm y-btn" type="button" data-act="adj-edit" data-year="' + y + '">' + PEN + 'Ajustar total</button>') + '</div>';
-    if (adjEditing === y) {
-      out += '<form class="adj-form" data-year="' + y + '" novalidate>' +
-        '<label class="f-n" for="adj-n-' + y + '">Ajuste manual<input class="inp" id="adj-n-' + y + '" type="number" min="0" step="1" inputmode="numeric" value="' + inf.n + '"></label>' +
-        '<label class="f-note" for="adj-note-' + y + '">Observação (opcional)<input class="inp" id="adj-note-' + y + '" type="text" maxlength="80" placeholder="Ex.: produzidos antes do portal" value="' + esc(inf.note) + '"></label>' +
-        '<div class="btns"><button class="btn ghost sm" type="button" data-act="adj-cancel">Cancelar</button><button class="btn primary sm" type="submit">Salvar</button></div>' +
-        '<span class="hint err adj-err" id="adj-err" hidden>Informe um número inteiro, 0 ou maior.</span></form>';
-    }
-    return out;
-  }
-  function bindAdjForm() {
-    var f = document.querySelector('.adj-form'); if (!f) return;
-    var y = +f.dataset.year;
-    f.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var v = $('#adj-n-' + y).value.trim();
-      if (!/^\d+$/.test(v)) { $('#adj-err').hidden = false; return; }
-      adj[y] = { n: parseInt(v, 10), note: $('#adj-note-' + y).value.trim() };
-      adjEditing = null; renderList(); toast('Total de ' + y + ' atualizado.');
-    });
-    var n = $('#adj-n-' + y); n.focus(); n.select();
   }
 
   /* ---------- filtros e lista ---------- */
@@ -297,15 +285,14 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
     anos.sort(function (a, b) { return b - a; });
     box.innerHTML = anos.map(function (y) {
       var group = sorted(list.filter(function (i) { return i.ano === y; }));
-      return '<section class="year" aria-label="Entregáveis de ' + y + '">' + yearHead(y, group.length) + '<div class="cards">' +
-        group.map(function (i, k) {
+      return '<section class="year" aria-label="Entregáveis de ' + y + '"><div class="year-head"><h2>' + y + '</h2><span>' + plural(group.length, 'entregável', 'entregáveis') + '</span></div><div class="cards">' +
+        group.map(function (i) {
           var meta = esc(i.tipo) + (i.date ? ' · ' + fmtDate(i.date) : '');
-          return '<div class="dcard" role="button" tabindex="0" draggable="' + (ordem === 'custom') + '" data-id="' + i.id + '" aria-label="Editar ' + esc(i.titulo) + '">' +
+          return '<div class="dcard" role="button" tabindex="0" draggable="' + (ordem === 'custom') + '" data-id="' + i.id + '" aria-label="Abrir visão geral de ' + esc(i.titulo) + '">' +
             '<div class="dth v' + (i.id % 3) + '">' + (i.img ? '<img src="' + i.img + '" alt="">' : IMG) + '<span class="badge">' + plural(i.arq, 'arquivo', 'arquivos') + '</span></div>' +
             '<div class="dbody"><div class="dtitle" title="' + esc(i.titulo) + '">' + esc(i.titulo) + '</div><div class="dmeta">' + meta + '</div></div></div>';
         }).join('') + '</div></section>';
     }).join('');
-    bindAdjForm();
   }
   function renderAll() { syncTipos(); renderList(); }
 
@@ -331,29 +318,101 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
     renderList(); toast('Ordem atualizada.');
   });
 
-  /* ---------- painel lateral ---------- */
-  function openDrawer(id) {
-    lastFocus = document.activeElement; confirmDel = false;
+  /* ---------- painel: visao geral da pasta ---------- */
+  function totals(it) {
+    var p = 0, e = 0;
+    it.regs.forEach(function (r) { p += r.prod; e += r.ent; });
+    return { p: p, e: e };
+  }
+  function regForm(r) {
+    var v = r || { date: '2026-11-16', prod: '', ent: 0, note: '' };
+    return '<form class="rform" id="rf" novalidate>' +
+      '<label class="f" for="r-date">Data de produção<input class="inp" id="r-date" type="date" value="' + esc(v.date) + '"></label>' +
+      '<div class="two"><label class="f" for="r-prod">Produzidos<input class="inp" id="r-prod" type="number" min="0" step="1" inputmode="numeric" value="' + esc(v.prod) + '"></label>' +
+      '<label class="f" for="r-ent">Entregues<input class="inp" id="r-ent" type="number" min="0" step="1" inputmode="numeric" value="' + esc(v.ent) + '"></label></div>' +
+      '<label class="f" for="r-note">Observação <span class="hint">(opcional)</span><input class="inp" id="r-note" type="text" maxlength="80" value="' + esc(v.note) + '" placeholder="Ex.: lote de janeiro" autocomplete="off"></label>' +
+      '<span class="hint err" id="r-err" hidden></span>' +
+      '<div class="btns">' + (ctx.hasRegs ? '<button class="btn ghost sm" type="button" data-act="r-cancel">Cancelar</button>' : '') + '<button class="btn primary sm" type="submit">' + (r ? 'Salvar registro' : 'Registrar') + '</button></div></form>';
+  }
+  function viewHtml(it) {
+    var t = totals(it), pct = t.p ? Math.min(100, Math.round(t.e / t.p * 100)) : 0;
+    ctx.hasRegs = it.regs.length > 0;
+    var status;
+    if (!t.p && !t.e) status = '<span>Nenhum registro ainda.</span>';
+    else if (t.e > t.p) status = '<span class="warn">Entregues acima dos produzidos. Confira os registros.</span><span>' + t.e + ' de ' + t.p + '</span>';
+    else if (t.e === t.p) status = '<span>Tudo entregue</span><span>' + t.e + ' de ' + t.p + '</span>';
+    else status = '<span>Faltam entregar ' + (t.p - t.e) + '</span><span>' + t.e + ' de ' + t.p + ' (' + pct + '%)</span>';
+    var regs = it.regs.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var list = regs.length ? '<ul class="regs">' + regs.map(function (r) {
+      if (ctx.form === r.id) return '<li class="reg" style="display:block">' + regForm(r) + '</li>';
+      return '<li class="reg" data-rid="' + r.id + '"><span class="d">' + fmtDate(r.date) + '</span>' +
+        '<span class="q"><span>Produzidos <b>' + r.prod + '</b></span><span>Entregues <b>' + r.ent + '</b></span></span>' +
+        (r.confirming ? '' : '<span class="acts"><button type="button" data-act="r-edit" aria-label="Editar registro de ' + fmtDate(r.date) + '">Editar</button><button type="button" class="del" data-act="r-del" aria-label="Remover registro de ' + fmtDate(r.date) + '">Remover</button></span>') +
+        (r.note ? '<span class="note">' + esc(r.note) + '</span>' : '') +
+        (r.confirming ? '<span class="cf"><span>Remover este registro?</span><span class="acts"><button type="button" data-act="r-del-no">Cancelar</button><button type="button" class="del" data-act="r-del-yes">Remover</button></span></span>' : '') +
+        '</li>';
+    }).join('') + '</ul>' : '';
+    var addBlock = ctx.form === 'new' ? regForm(null) : '';
+    return '<div class="d-head"><div><h2 id="d-title">' + esc(it.titulo) + '</h2><p>' + esc(it.tipo) + (it.date ? ' · ' + fmtDate(it.date) : '') + ' · ' + plural(it.arq, 'arquivo', 'arquivos') + '</p></div>' +
+      '<button class="x" type="button" data-act="close" aria-label="Fechar">' + XI + '</button></div>' +
+      '<div class="d-body">' +
+      '<div class="tiles"><div class="tile"><span class="l">Total produzido</span><span class="n">' + t.p + '</span></div>' +
+      '<div class="tile ent"><span class="l">Total entregue</span><span class="n">' + t.e + '</span></div></div>' +
+      '<div class="prog"><div class="bar" role="img" aria-label="Entregues em relação aos produzidos: ' + pct + '%"><i style="width:' + pct + '%"></i></div><div class="prog-t">' + status + '</div></div>' +
+      '<div class="sec-h"><h3>Histórico de produção</h3>' + (ctx.form === 'new' ? '' : '<button class="btn ghost sm" type="button" data-act="r-add">' + PLUS + 'Novo registro</button>') + '</div>' +
+      (regs.length || ctx.form === 'new' ? '' : '<p class="none-note">Registre quantos foram feitos, quando e quantos já foram entregues.</p>') +
+      addBlock + list +
+      '</div><div class="d-foot"><button class="btn ghost" type="button" data-act="edit-item">' + PEN + 'Editar entregável</button></div>';
+  }
+  function openView(id, keepFocus) {
+    var it = byId(id); if (!it) return;
+    if (!keepFocus) lastFocus = document.activeElement;
+    if (!ctx || ctx.id !== it.id || ctx.mode !== 'view') ctx = { mode: 'view', id: it.id, form: it.regs.length ? null : 'new' };
+    var d = $('#drawer');
+    d.innerHTML = viewHtml(it); d.hidden = false; $('#scrim').hidden = false;
+    var rf = $('#rf');
+    if (rf) {
+      rf.addEventListener('submit', saveReg);
+      var f = rf.querySelector('input[type="number"]'); if (f) f.focus();
+    } else if (!keepFocus) { var x = d.querySelector('.x'); if (x) x.focus(); }
+  }
+  function saveReg(e) {
+    e.preventDefault();
+    var it = byId(ctx.id), date = $('#r-date').value, p = $('#r-prod').value.trim(), en = $('#r-ent').value.trim(), er = $('#r-err'), msg = '';
+    if (!date) msg = 'Informe a data.';
+    else if (!/^\d+$/.test(p) || !/^\d+$/.test(en)) msg = 'Informe números inteiros em Produzidos e Entregues (use 0 se nenhum).';
+    else if (+p === 0 && +en === 0) msg = 'Informe ao menos um item produzido ou entregue.';
+    if (msg) { er.textContent = msg; er.hidden = false; return; }
+    var data = { date: date, prod: parseInt(p, 10), ent: parseInt(en, 10), note: $('#r-note').value.trim() };
+    if (ctx.form === 'new') { data.id = ++uid; it.regs.push(data); toast('Registro adicionado.'); }
+    else { Object.assign(it.regs.filter(function (r) { return r.id === ctx.form; })[0], data); toast('Registro atualizado.'); }
+    ctx.form = null; openView(it.id, true);
+  }
+
+  /* ---------- painel: criar e editar entregavel ---------- */
+  function openEdit(id) {
+    if (!$('#drawer').hidden && ctx && ctx.mode === 'view') { /* vem da visao geral: mantem o foco de origem */ } else lastFocus = document.activeElement;
+    confirmDel = false;
     var it = id ? byId(id) : null;
-    ctx = { id: id || null };
+    ctx = { mode: 'edit', id: id || null };
     var v = it || { titulo: '', tipo: '', date: '', ano: 2026, arq: 1 };
     var tipos = []; items.forEach(function (i) { if (tipos.indexOf(i.tipo) < 0) tipos.push(i.tipo); });
     var anos = [2027, 2026, 2025, 2024, 2023];
     $('#drawer').innerHTML =
-      '<div class="d-head"><h2 id="d-title">' + (it ? 'Editar entregável' : 'Novo entregável') + '</h2><button class="x" type="button" data-act="close" aria-label="Fechar">' + XI + '</button></div>' +
+      '<div class="d-head"><div><h2 id="d-title">' + (it ? 'Editar entregável' : 'Novo entregável') + '</h2></div><button class="x" type="button" data-act="close" aria-label="Fechar">' + XI + '</button></div>' +
       '<form id="f" novalidate><div class="d-body">' +
       '<label class="f" for="f-titulo">Título<input class="inp" id="f-titulo" type="text" value="' + esc(v.titulo) + '" autocomplete="off"><span class="hint err" id="e-titulo" hidden>Informe o título.</span></label>' +
       '<label class="f" for="f-tipo">Tipo<input class="inp" id="f-tipo" type="text" list="tipos" value="' + esc(v.tipo) + '" placeholder="Ex.: CAMPANHA, PDFs" autocomplete="off"><datalist id="tipos">' + tipos.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('') + '</datalist><span class="hint err" id="e-tipo" hidden>Informe o tipo.</span></label>' +
       '<div class="two"><label class="f" for="f-date">Data <span class="hint">(opcional)</span><input class="inp" id="f-date" type="date" value="' + esc(v.date) + '"></label>' +
       '<label class="f" for="f-ano">Ano<select class="inp" id="f-ano">' + anos.map(function (a) { return '<option' + (a === v.ano ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label></div>' +
-      '<label class="f" for="f-arq">Quantidade de arquivos<input class="inp" id="f-arq" type="number" min="1" step="1" inputmode="numeric" value="' + v.arq + '"><span class="hint err" id="e-arq" hidden>Informe um número inteiro, 1 ou maior.</span></label>' +
-      '<label class="f" for="f-img">Imagem de capa <span class="hint">(opcional)</span><input class="inp" id="f-img" type="file" accept="image/*">' + (it ? '<span class="hint">Deixe vazio para manter a atual.</span>' : '') + '</label>' +
+      '<label class="f" for="f-arq">Quantidade de arquivos na pasta<input class="inp" id="f-arq" type="number" min="1" step="1" inputmode="numeric" value="' + v.arq + '"><span class="hint err" id="e-arq" hidden>Informe um número inteiro, 1 ou maior.</span></label>' +
+      '<label class="f" for="f-img">Foto de capa <span class="hint">(opcional)</span><input class="inp" id="f-img" type="file" accept="image/*">' + (it ? '<span class="hint">Deixe vazio para manter a atual.</span>' : '') + '</label>' +
       '</div><div class="d-foot">' + (it ? '<button class="btn ghost left" type="button" id="del" style="color:var(--danger)">Remover</button>' : '') +
-      '<button class="btn ghost" type="button" data-act="close">Cancelar</button><button class="btn primary" type="submit">Salvar</button></div></form>';
+      '<button class="btn ghost" type="button" data-act="' + (it ? 'back' : 'close') + '">' + (it ? 'Voltar' : 'Cancelar') + '</button><button class="btn primary" type="submit">Salvar</button></div></form>';
     $('#drawer').hidden = false; $('#scrim').hidden = false;
     $('#f-titulo').focus();
     $('#f-date').addEventListener('change', function (e) { if (e.target.value) $('#f-ano').value = e.target.value.slice(0, 4); });
-    $('#f').addEventListener('submit', submit);
+    $('#f').addEventListener('submit', submitEdit);
     var del = $('#del');
     if (del) del.addEventListener('click', function () {
       if (!confirmDel) { confirmDel = true; del.textContent = 'Confirmar remoção'; del.className = 'btn danger left'; del.style.color = ''; return; }
@@ -370,7 +429,7 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
       var r = new FileReader(); r.onload = function () { res(r.result); }; r.onerror = function () { res(null); }; r.readAsDataURL(f);
     });
   }
-  function submit(e) {
+  function submitEdit(e) {
     e.preventDefault();
     var titulo = $('#f-titulo').value.trim(), tipo = $('#f-tipo').value.trim(), arq = $('#f-arq').value.trim(), ok = true;
     $('#e-titulo').hidden = !!titulo; if (!titulo) ok = false;
@@ -381,9 +440,10 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
     var data = { titulo: titulo, tipo: tipo, date: $('#f-date').value, ano: +$('#f-ano').value, arq: parseInt(arq, 10) };
     var id = ctx.id;
     readFile($('#f-img').files[0]).then(function (img) {
-      if (id) { var it = byId(id); Object.assign(it, data); if (img) it.img = img; toast('Entregável atualizado.'); }
-      else { data.id = ++uid; if (img) data.img = img; items.unshift(data); toast('Entregável adicionado.'); }
-      closeDrawer(); renderAll();
+      var target;
+      if (id) { target = byId(id); Object.assign(target, data); if (img) target.img = img; toast('Entregável atualizado.'); }
+      else { data.id = ++uid; data.regs = []; if (img) data.img = img; items.unshift(data); target = data; toast('Entregável adicionado.'); }
+      renderAll(); ctx = null; openView(target.id, true);
     });
   }
 
@@ -391,18 +451,25 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-act]');
     if (t) {
-      var act = t.dataset.act;
-      if (act === 'add') openDrawer();
+      var act = t.dataset.act, it = ctx && ctx.id ? byId(ctx.id) : null;
+      var rli = t.closest('[data-rid]'), reg = rli && it ? it.regs.filter(function (r) { return r.id === +rli.dataset.rid; })[0] : null;
+      if (act === 'add') { lastFocus = document.activeElement; openEdit(); }
       else if (act === 'close') closeDrawer();
-      else if (act === 'adj-edit') { adjEditing = +t.dataset.year; renderList(); }
-      else if (act === 'adj-cancel') { adjEditing = null; renderList(); }
+      else if (act === 'back') { var id = ctx.id; ctx = null; openView(id, true); }
+      else if (act === 'edit-item') openEdit(ctx.id);
+      else if (act === 'r-add') { ctx.form = 'new'; openView(ctx.id, true); }
+      else if (act === 'r-cancel') { ctx.form = null; openView(ctx.id, true); }
+      else if (act === 'r-edit' && reg) { ctx.form = reg.id; openView(ctx.id, true); }
+      else if (act === 'r-del' && reg) { reg.confirming = true; openView(ctx.id, true); }
+      else if (act === 'r-del-no' && reg) { reg.confirming = false; openView(ctx.id, true); }
+      else if (act === 'r-del-yes' && reg) { it.regs.splice(it.regs.indexOf(reg), 1); toast('Registro removido.'); openView(ctx.id, true); }
       return;
     }
-    var c = e.target.closest('.dcard'); if (c) openDrawer(c.dataset.id);
+    var c = e.target.closest('.dcard'); if (c) { ctx = null; openView(c.dataset.id); }
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { if (!$('#drawer').hidden) closeDrawer(); else if (adjEditing) { adjEditing = null; renderList(); } }
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('dcard')) { e.preventDefault(); openDrawer(e.target.dataset.id); }
+    if (e.key === 'Escape' && !$('#drawer').hidden) closeDrawer();
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('dcard')) { e.preventDefault(); ctx = null; openView(e.target.dataset.id); }
   });
   $('#scrim').addEventListener('click', closeDrawer);
   $('#tipo').addEventListener('change', function (e) { tipoSel = e.target.value; renderList(); });
