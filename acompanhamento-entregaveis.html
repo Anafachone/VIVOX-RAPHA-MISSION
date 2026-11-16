@@ -76,27 +76,6 @@ select.inp-sel option { background: var(--surface); color: var(--ink); }
 .btn.sm { height: 32px; padding: 0 12px; font-weight: 500; }
 .btn svg { width: 16px; height: 16px; flex: none; }
 
-/* faixa de resumo */
-.summary { margin-top: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
-.sum-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.sum-label { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.sum-total { font-size: 44px; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
-.sum-calc { font-size: 12.5px; color: var(--muted); }
-.sum-div { width: 1px; align-self: stretch; background: var(--line); }
-.sum-years { display: flex; gap: 10px; flex-wrap: wrap; }
-.yc { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; display: flex; flex-direction: column; min-width: 84px; }
-.yc b { font-size: 20px; font-variant-numeric: tabular-nums; }
-.yc span { font-size: 12px; color: var(--muted); }
-.sum-adj { margin-left: auto; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 220px; max-width: 100%; }
-.adj-line { font-size: 13px; }
-.adj-line b { font-variant-numeric: tabular-nums; }
-.adj-note { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
-.adj-form { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.adj-form label { font-size: 12px; font-weight: 600; display: flex; flex-direction: column; gap: 4px; }
-.adj-form .row { display: flex; gap: 8px; }
-.inp { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; width: 100%; font-weight: 400; }
-.inp:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-
 /* filtros */
 .filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
 .fgroup { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; }
@@ -105,9 +84,21 @@ select.inp-sel option { background: var(--surface); color: var(--ink); }
 
 /* anos e cards */
 .year { margin-top: 26px; }
-.year-head { display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.year-head { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 .year-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
-.year-head span { font-size: 12.5px; color: var(--muted); }
+.y-total { display: flex; align-items: baseline; gap: 6px; }
+.y-total b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.y-total span { font-size: 12.5px; color: var(--muted); }
+.y-calc { font-size: 12.5px; color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
+.y-btn { margin-left: auto; }
+.adj-form { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.adj-form label { font-size: 12px; font-weight: 600; display: flex; flex-direction: column; gap: 4px; }
+.adj-form .f-n { width: 150px; }
+.adj-form .f-note { flex: 1 1 220px; min-width: 0; }
+.adj-form .btns { display: flex; gap: 8px; }
+.adj-err { flex-basis: 100%; }
+.inp { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; width: 100%; font-weight: 400; }
+.inp:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 14px; margin-top: 16px; }
 .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; min-width: 0; }
 .dcard:hover { border-color: var(--accent); }
@@ -148,9 +139,7 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
 
 @media (max-width: 700px) {
   h1 { font-size: 22px; }
-  .sum-div { display: none; }
-  .sum-adj { margin-left: 0; width: 100%; }
-  .sum-total { font-size: 38px; }
+  .y-btn { margin-left: 0; }
   .filters .grow { margin-left: 0; width: 100%; }
   .filters .grow .btn { width: 100%; }
   .fgroup { flex: 1 1 100%; }
@@ -184,17 +173,6 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
     <button class="tab" role="tab" aria-selected="true" type="button">Entregáveis</button>
     <button class="tab" role="tab" aria-selected="false" type="button" data-stub>Propostas</button>
   </nav>
-
-  <section class="summary" aria-label="Total geral de entregáveis">
-    <div class="sum-main">
-      <span class="sum-label">Total geral produzido</span>
-      <span class="sum-total" id="total">0</span>
-      <span class="sum-calc" id="calc"></span>
-    </div>
-    <div class="sum-div" aria-hidden="true"></div>
-    <div class="sum-years" id="years" aria-label="Entregáveis por ano"></div>
-    <div class="sum-adj" id="adj"></div>
-  </section>
 
   <div class="filters">
     <label class="fgroup">Tipo<select class="inp-sel" id="tipo"></select></label>
@@ -242,8 +220,8 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
   [1, 1, 1, 1, 2, 1, 1, 1, 1, 1].forEach(function (n, i) {
     items.push({ id: 20 + i, titulo: 'Título a preencher', tipo: 'A definir', date: '', ano: 2025, arq: n });
   });
-  var adj = { n: 0, note: '' };
-  var adjEditing = false;
+  var adj = {};
+  var adjEditing = null;
   var tipoSel = 'all', ordem = 'custom';
   var ctx = null, lastFocus = null, dragId = null, confirmDel = false;
 
@@ -259,36 +237,40 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
     clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2400);
   }
 
-  /* ---------- resumo ---------- */
-  function renderSummary() {
-    var cards = items.length, total = cards + adj.n;
-    $('#total').textContent = total;
-    $('#calc').textContent = cards + ' cadastrados no portal' + (adj.n ? ' + ' + adj.n + ' de ajuste manual' : '');
-    var byYear = {};
-    items.forEach(function (i) { byYear[i.ano] = (byYear[i.ano] || 0) + 1; });
-    $('#years').innerHTML = Object.keys(byYear).sort(function (a, b) { return b - a; }).map(function (y) {
-      return '<div class="yc"><b>' + byYear[y] + '</b><span>em ' + y + '</span></div>';
-    }).join('');
-    var a = $('#adj');
-    if (adjEditing) {
-      a.innerHTML = '<form class="adj-form" id="adj-form" novalidate>' +
-        '<label for="adj-n">Ajuste manual (somado ao total)<input class="inp" id="adj-n" type="number" min="0" step="1" inputmode="numeric" value="' + adj.n + '"></label>' +
-        '<label for="adj-note">Observação <span class="hint">(opcional)</span><input class="inp" id="adj-note" type="text" maxlength="80" placeholder="Ex.: produzidos antes do portal" value="' + esc(adj.note) + '"></label>' +
-        '<span class="hint err" id="adj-err" hidden>Informe um número inteiro, 0 ou maior.</span>' +
-        '<div class="row"><button class="btn ghost sm" type="button" data-act="adj-cancel">Cancelar</button><button class="btn primary sm" type="submit">Salvar</button></div></form>';
-      $('#adj-n').focus(); $('#adj-n').select();
-      $('#adj-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var v = $('#adj-n').value.trim();
-        if (!/^\d+$/.test(v)) { $('#adj-err').hidden = false; return; }
-        adj.n = parseInt(v, 10); adj.note = $('#adj-note').value.trim(); adjEditing = false;
-        renderSummary(); toast('Total geral atualizado.');
-      });
-    } else {
-      a.innerHTML = '<div class="adj-line">Ajuste manual: <b>' + (adj.n ? '+' + adj.n : '0') + '</b></div>' +
-        (adj.note ? '<div class="adj-note">' + esc(adj.note) + '</div>' : '<div class="adj-note">Some aqui o que foi produzido e não tem card.</div>') +
-        '<button class="btn ghost sm" type="button" data-act="adj-edit">' + PEN + 'Ajustar total</button>';
+  /* ---------- total por ano ---------- */
+  function yearInfo(y) {
+    var cards = items.filter(function (i) { return i.ano === y; }).length;
+    var a = adj[y] || { n: 0, note: '' };
+    return { cards: cards, n: a.n, note: a.note, total: cards + a.n };
+  }
+  function yearHead(y, shown) {
+    var inf = yearInfo(y);
+    var calc = inf.cards + ' cadastrados no portal' + (inf.n ? ' + ' + inf.n + ' de ajuste manual' : '') +
+      (shown !== inf.cards ? ' · mostrando ' + shown + ' pelo filtro' : '') + (inf.note ? ' · ' + inf.note : '');
+    var out = '<div class="year-head"><h2>' + y + '</h2>' +
+      '<div class="y-total"><b>' + inf.total + '</b><span>' + (inf.total === 1 ? 'entregável produzido' : 'entregáveis produzidos') + '</span></div>' +
+      '<span class="y-calc">' + esc(calc) + '</span>' +
+      (adjEditing === y ? '' : '<button class="btn ghost sm y-btn" type="button" data-act="adj-edit" data-year="' + y + '">' + PEN + 'Ajustar total</button>') + '</div>';
+    if (adjEditing === y) {
+      out += '<form class="adj-form" data-year="' + y + '" novalidate>' +
+        '<label class="f-n" for="adj-n-' + y + '">Ajuste manual<input class="inp" id="adj-n-' + y + '" type="number" min="0" step="1" inputmode="numeric" value="' + inf.n + '"></label>' +
+        '<label class="f-note" for="adj-note-' + y + '">Observação (opcional)<input class="inp" id="adj-note-' + y + '" type="text" maxlength="80" placeholder="Ex.: produzidos antes do portal" value="' + esc(inf.note) + '"></label>' +
+        '<div class="btns"><button class="btn ghost sm" type="button" data-act="adj-cancel">Cancelar</button><button class="btn primary sm" type="submit">Salvar</button></div>' +
+        '<span class="hint err adj-err" id="adj-err" hidden>Informe um número inteiro, 0 ou maior.</span></form>';
     }
+    return out;
+  }
+  function bindAdjForm() {
+    var f = document.querySelector('.adj-form'); if (!f) return;
+    var y = +f.dataset.year;
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = $('#adj-n-' + y).value.trim();
+      if (!/^\d+$/.test(v)) { $('#adj-err').hidden = false; return; }
+      adj[y] = { n: parseInt(v, 10), note: $('#adj-note-' + y).value.trim() };
+      adjEditing = null; renderList(); toast('Total de ' + y + ' atualizado.');
+    });
+    var n = $('#adj-n-' + y); n.focus(); n.select();
   }
 
   /* ---------- filtros e lista ---------- */
@@ -315,7 +297,7 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
     anos.sort(function (a, b) { return b - a; });
     box.innerHTML = anos.map(function (y) {
       var group = sorted(list.filter(function (i) { return i.ano === y; }));
-      return '<section class="year" aria-label="Entregáveis de ' + y + '"><div class="year-head"><h2>' + y + '</h2><span>' + plural(group.length, 'entregável', 'entregáveis') + '</span></div><div class="cards">' +
+      return '<section class="year" aria-label="Entregáveis de ' + y + '">' + yearHead(y, group.length) + '<div class="cards">' +
         group.map(function (i, k) {
           var meta = esc(i.tipo) + (i.date ? ' · ' + fmtDate(i.date) : '');
           return '<div class="dcard" role="button" tabindex="0" draggable="' + (ordem === 'custom') + '" data-id="' + i.id + '" aria-label="Editar ' + esc(i.titulo) + '">' +
@@ -323,8 +305,9 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
             '<div class="dbody"><div class="dtitle" title="' + esc(i.titulo) + '">' + esc(i.titulo) + '</div><div class="dmeta">' + meta + '</div></div></div>';
         }).join('') + '</div></section>';
     }).join('');
+    bindAdjForm();
   }
-  function renderAll() { syncTipos(); renderSummary(); renderList(); }
+  function renderAll() { syncTipos(); renderList(); }
 
   /* ---------- arrastar para reordenar ---------- */
   document.addEventListener('dragstart', function (e) {
@@ -411,14 +394,14 @@ label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 600; fon
       var act = t.dataset.act;
       if (act === 'add') openDrawer();
       else if (act === 'close') closeDrawer();
-      else if (act === 'adj-edit') { adjEditing = true; renderSummary(); }
-      else if (act === 'adj-cancel') { adjEditing = false; renderSummary(); }
+      else if (act === 'adj-edit') { adjEditing = +t.dataset.year; renderList(); }
+      else if (act === 'adj-cancel') { adjEditing = null; renderList(); }
       return;
     }
     var c = e.target.closest('.dcard'); if (c) openDrawer(c.dataset.id);
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { if (!$('#drawer').hidden) closeDrawer(); else if (adjEditing) { adjEditing = false; renderSummary(); } }
+    if (e.key === 'Escape') { if (!$('#drawer').hidden) closeDrawer(); else if (adjEditing) { adjEditing = null; renderList(); } }
     if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('dcard')) { e.preventDefault(); openDrawer(e.target.dataset.id); }
   });
   $('#scrim').addEventListener('click', closeDrawer);
